@@ -46,7 +46,7 @@ const getMessageDetails = async (messageId, token) => {
       const { parts, body } = messageDetails.payload;
 
       const endcodedBody = parts
-        ? parts.find((p) => p.mimeType === 'text/html').body.data
+        ? parts.find((p) => p.mimeType === 'text/html')?.body.data
         : body?.data;
 
       let bodyHtml;

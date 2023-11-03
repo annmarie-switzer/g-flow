@@ -1,30 +1,11 @@
 import { generateMessage } from './message.js';
+import { markRead } from './actions.js';
 
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
 
 listContainer.style.display = 'block';
 messageContainer.style.display = 'none';
-
-const markRead = async (id, token) => {
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
-  const body = JSON.stringify({
-    removeLabelIds: ['UNREAD']
-  });
-
-  return fetch(apiUrl, { method: 'POST', headers, body })
-    .then((response) => response.json())
-    .then((result) => {
-      console.log('Email marked as read:', result);
-    })
-    .catch((error) => {
-      console.error('Error marking email as read:', error);
-    });
-};
 
 const onListItemClick = (id, data) => {
   // Populate the message view and hide the list view

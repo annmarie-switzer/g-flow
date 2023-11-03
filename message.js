@@ -1,15 +1,32 @@
-import { generateList } from './popup.js';
-import { actionButton, actionButtonRow } from './shared.js';
+import { markUnread, moveToTrash, resetView } from './actions.js';
 
-const resetView = () => {
-  const listContainer = document.getElementById('list-container');
-  const messageContainer = document.getElementById('message-container');
+// text, action
+export const actionButton = (details) => {
+  const btn = document.createElement('button');
+  btn.textContent = details.text;
+  btn.addEventListener('click', () => {
+    details.action();
+  });
 
-  messageContainer.innerHTML = '';
-  messageContainer.style.display = 'none';
+  return btn;
+};
 
-  generateList();
-  listContainer.style.display = 'block';
+export const actionButtonRow = (messageId) => {
+  const row = document.createElement('div');
+  row.className = 'action-row';
+  row.appendChild(
+    actionButton({
+      text: 'Move to trash',
+      action: () => moveToTrash(messageId)
+    })
+  );
+  row.appendChild(
+    actionButton({
+      text: 'Mark unread',
+      action: () => markUnread(messageId)
+    })
+  );
+  return row;
 };
 
 export const generateMessage = (messageId, messageData) => {
