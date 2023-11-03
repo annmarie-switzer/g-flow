@@ -26,8 +26,8 @@ export const markRead = async (id) => {
   });
 
   return fetch(apiUrl, { method: 'POST', headers, body })
-    .then((response) => response.json())
     .then((result) => {
+      chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
       console.log('Email marked as read:', result);
     })
     .catch((error) => {

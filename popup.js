@@ -8,19 +8,12 @@ listContainer.style.display = 'block';
 messageContainer.style.display = 'none';
 
 const onListItemClick = (id, data) => {
-  // Populate the message view and hide the list view
   const message = generateMessage(id, data);
   messageContainer.appendChild(message);
   listContainer.style.display = 'none';
   messageContainer.style.display = 'block';
 
-  // Mark message as "read"
-  chrome.runtime.sendMessage({ action: 'getAccessToken' }, (response) => {
-    markRead(id, response.token).then((res) => {
-      // Reset unread messsage list
-      chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-    });
-  });
+  markRead(id);
 };
 
 const generateListItem = (messageId, messageData) => {
