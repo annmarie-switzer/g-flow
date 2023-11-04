@@ -26,6 +26,20 @@ const getUnread = async (token) => {
   );
 };
 
+const getSenderInfo = (senderValue) => {
+  let sender = senderValue;
+
+  const matches = senderValue.match(/^(.*?) <(.*?)>$/);
+
+  if (matches?.length === 3) {
+    const senderName = matches[1];
+    const senderEmail = matches[2];
+    sender = `${senderName}&nbsp;&lt;${senderEmail}&gt;`;
+  }
+
+  return sender;
+};
+
 const getMessageDetails = async (messageId, token) => {
   const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
   const headers = new Headers({
@@ -35,12 +49,16 @@ const getMessageDetails = async (messageId, token) => {
   return fetch(apiUrl, { method: 'GET', headers })
     .then((response) => response.json())
     .then((messageDetails) => {
-      const sender = messageDetails.payload.headers.find(
-        (header) => header.name === 'From'
+      console.log(messageDetails);
+
+      const senderValue = messageDetails.payload.headers.find((header) =>
+        /from/i.test(header.name)
       ).value;
 
-      const subject = messageDetails.payload.headers.find(
-        (header) => header.name === 'Subject'
+      const sender = getSenderInfo(senderValue);
+
+      const subject = messageDetails.payload.headers.find((header) =>
+        /subject/i.test(header.name)
       ).value;
 
       const { parts, body } = messageDetails.payload;

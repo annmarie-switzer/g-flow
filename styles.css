@@ -1,21 +1,36 @@
+:root {
+  --grey: #646b75;
+}
+
 body {
-  width: 500px !important;
-}
-
-body > * {
-  width: 100%;
-  border: solid red;
-}
-
-li {
-  list-style-type: none;
-}
-
-ul {
-  padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 500px !important;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+}
+
+#list-container,
+#message-container {
+  margin: 12px 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .list-item {
-  border: solid blue;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 125px;
+  margin-bottom: 8px;
+  border-bottom: solid 0.5px var(--grey);
+}
+
+.subject {
+  font-size: 18px;
+}
+
+.snippet {
+  color: var(--grey);
 }

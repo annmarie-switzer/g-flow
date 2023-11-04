@@ -19,16 +19,16 @@ const onListItemClick = (id, data) => {
 const generateListItem = (messageId, messageData) => {
   const { sender, subject, snippet } = messageData;
 
-  const listItem = document.createElement('li');
+  const listItem = document.createElement('div');
   listItem.className = 'list-item';
   listItem.addEventListener('click', () =>
     onListItemClick(messageId, messageData)
   );
 
   listItem.innerHTML = `
-    <h3>${subject}</h3>
-    <h4>${sender}</h4>
-    <p>${snippet}</p>
+    <div class="sender">${sender}</div>
+    <div class="subject">${subject}</div>
+    <div class="snippet">${snippet} ...</div>
   `;
 
   return listItem;
