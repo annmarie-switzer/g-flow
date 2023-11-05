@@ -3,12 +3,14 @@ import { generateList } from './popup.js';
 export const resetView = () => {
   const listContainer = document.getElementById('list-container');
   const messageContainer = document.getElementById('message-container');
-
   messageContainer.innerHTML = '';
   messageContainer.style.display = 'none';
-
-  generateList();
   listContainer.style.display = 'flex';
+};
+
+export const goBack = () => {
+  generateList();
+  resetView();
 };
 
 export const markRead = async (id) => {
@@ -59,7 +61,7 @@ export const markUnread = async (id) => {
     });
 };
 
-export const moveToTrash = async (id) => {
+export const moveToTrash = async (id, reset = false) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
   });
@@ -69,14 +71,11 @@ export const moveToTrash = async (id) => {
     Authorization: `Bearer ${token}`
   });
 
-  return fetch(apiUrl, { method: 'POST', headers })
-    .then((result) => {
-      chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' }, () =>
-        resetView()
-      );
-      console.log('Email moved to trash:', result);
-    })
-    .catch((error) => {
-      console.error('Error moving email to trash:', error);
-    });
+  await fetch(apiUrl, { method: 'POST', headers });
+  await chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
+  generateList();
+
+  if (reset) {
+    resetView();
+  }
 };

@@ -57,6 +57,7 @@ button > svg > path {
   height: 110px;
   border-bottom: solid 0.5px var(--grey);
   cursor: pointer;
+  position: relative;
 }
 
 .list-item:hover {
@@ -96,6 +97,8 @@ button > svg > path {
     0px 1px 2px 0px rgba(0, 0, 0, 0.06);
 }
 
-.action-row > button:first-child {
-  margin-right: auto;
+.list-item > button {
+  position: absolute;
+  right: 8px;
+  top: 8px;
 }

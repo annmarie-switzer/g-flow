@@ -1,6 +1,5 @@
-import { markUnread, moveToTrash, resetView } from './actions.js';
+import { goBack, markUnread, moveToTrash } from './actions.js';
 
-// text, action
 export const actionButton = (details) => {
   const btn = document.createElement('button');
 
@@ -8,7 +7,6 @@ export const actionButton = (details) => {
     .then((response) => response.text())
     .then((svgContent) => {
       btn.innerHTML = svgContent;
-      btn.appendChild(icon);
     });
 
   btn.title = details.title;
@@ -25,21 +23,24 @@ export const actionButton = (details) => {
 export const actionButtonRow = (messageId) => {
   const row = document.createElement('div');
   row.className = 'action-row';
+
   row.appendChild(
     actionButton({
       icon: 'back',
-      action: resetView,
-      title: 'Go back'
-      // style: { backgroundColor: 'blue' }
+      action: goBack,
+      title: 'Go back',
+      style: { marginRight: 'auto' }
     })
   );
+
   row.appendChild(
     actionButton({
       icon: 'delete',
-      action: () => moveToTrash(messageId),
+      action: () => moveToTrash(messageId, true),
       title: 'Move to trash'
     })
   );
+
   row.appendChild(
     actionButton({
       icon: 'mark-unread',
@@ -47,6 +48,7 @@ export const actionButtonRow = (messageId) => {
       title: 'Mark unread'
     })
   );
+
   return row;
 };
 
@@ -60,8 +62,8 @@ export const generateMessage = (messageId, messageData) => {
   const messageBody = document.createElement('div');
   messageBody.className = 'message-body';
   messageBody.innerHTML = `
-    <div>${subject}</div>
-    <div>${sender}</div>
+    <div class="sender">${sender}</div>
+    <div class="subject">${subject}</div>
     <div>${body}</div>
   `;
 
