@@ -5,7 +5,7 @@
   "version": "1.0",
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "icon.png"
+    "default_icon": "img/flow.png"
   },
   "oauth2": {
     "client_id": "1020857444789-nnv7gph0vvb3c2e9he1u7tii0c55gkfn.apps.googleusercontent.com",

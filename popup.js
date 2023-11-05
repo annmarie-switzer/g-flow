@@ -4,14 +4,13 @@ import { markRead } from './actions.js';
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
 
-listContainer.style.display = 'block';
+listContainer.style.display = 'flex';
 messageContainer.style.display = 'none';
 
 const onListItemClick = (id, data) => {
-  const message = generateMessage(id, data);
-  messageContainer.appendChild(message);
+  generateMessage(id, data);
   listContainer.style.display = 'none';
-  messageContainer.style.display = 'block';
+  messageContainer.style.display = 'flex';
 
   markRead(id);
 };

@@ -3,10 +3,21 @@ import { markUnread, moveToTrash, resetView } from './actions.js';
 // text, action
 export const actionButton = (details) => {
   const btn = document.createElement('button');
-  btn.textContent = details.text;
+
+  fetch(`img/${details.icon}.svg`)
+    .then((response) => response.text())
+    .then((svgContent) => {
+      btn.innerHTML = svgContent;
+      btn.appendChild(icon);
+    });
+
+  btn.title = details.title;
+
   btn.addEventListener('click', () => {
     details.action();
   });
+
+  Object.assign(btn.style, details.style);
 
   return btn;
 };
@@ -16,14 +27,24 @@ export const actionButtonRow = (messageId) => {
   row.className = 'action-row';
   row.appendChild(
     actionButton({
-      text: 'Move to trash',
-      action: () => moveToTrash(messageId)
+      icon: 'back',
+      action: resetView,
+      title: 'Go back'
+      // style: { backgroundColor: 'blue' }
     })
   );
   row.appendChild(
     actionButton({
-      text: 'Mark unread',
-      action: () => markUnread(messageId)
+      icon: 'delete',
+      action: () => moveToTrash(messageId),
+      title: 'Move to trash'
+    })
+  );
+  row.appendChild(
+    actionButton({
+      icon: 'mark-unread',
+      action: () => markUnread(messageId),
+      title: 'Mark unread'
     })
   );
   return row;
@@ -32,19 +53,17 @@ export const actionButtonRow = (messageId) => {
 export const generateMessage = (messageId, messageData) => {
   const { sender, subject, body } = messageData;
 
-  const message = document.createElement('div');
-  message.className = 'message';
+  const messageContainer = document.getElementById('message-container');
 
-  message.appendChild(actionButton({ text: 'Go back', action: resetView }));
-  message.appendChild(actionButtonRow(messageId));
+  messageContainer.appendChild(actionButtonRow(messageId));
 
-  const messageContent = document.createElement('div');
-  messageContent.innerHTML = `
-    <h3>${subject}</h3>
-    <h4>${sender}</h4>
-    <p>${body}</p>
+  const messageBody = document.createElement('div');
+  messageBody.className = 'message-body';
+  messageBody.innerHTML = `
+    <div>${subject}</div>
+    <div>${sender}</div>
+    <div>${body}</div>
   `;
-  message.appendChild(messageContent);
 
-  return message;
+  messageContainer.appendChild(messageBody);
 };

@@ -8,7 +8,7 @@ export const resetView = () => {
   messageContainer.style.display = 'none';
 
   generateList();
-  listContainer.style.display = 'block';
+  listContainer.style.display = 'flex';
 };
 
 export const markRead = async (id) => {
