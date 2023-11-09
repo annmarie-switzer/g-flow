@@ -52,12 +52,12 @@ export const actionButtonRow = (messageId) => {
   return row;
 };
 
-export const generateMessage = (messageId, messageData) => {
-  const { sender, subject, body } = messageData;
+export const generateMessage = (messageData) => {
+  const { id, received, sender, subject, body } = messageData;
 
   const messageContainer = document.getElementById('message-container');
 
-  messageContainer.appendChild(actionButtonRow(messageId));
+  messageContainer.appendChild(actionButtonRow(id));
 
   const messageBody = document.createElement('div');
   messageBody.className = 'message-body';

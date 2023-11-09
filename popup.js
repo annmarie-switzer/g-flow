@@ -7,25 +7,45 @@ const messageContainer = document.getElementById('message-container');
 listContainer.style.display = 'flex';
 messageContainer.style.display = 'none';
 
-const onListItemClick = (id, data) => {
-  generateMessage(id, data);
+const formatReceived = (received) => {
+  const date = new Date(parseInt(received));
+  const today = new Date();
+  const userLocale = navigator.language || 'en-US';
+
+  if (date.toLocaleDateString() === today.toLocaleDateString()) {
+    return new Intl.DateTimeFormat(userLocale, {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(date);
+  } else {
+    return new Intl.DateTimeFormat(userLocale, {
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  }
+};
+
+const onListItemClick = (message) => {
+  generateMessage(message);
   listContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
 
-  markRead(id);
+  markRead(message.id);
 };
 
-const generateListItem = (messageId, messageData) => {
-  const { sender, subject, snippet } = messageData;
+const generateListItem = (messageData) => {
+  const { id, received, sender, subject, snippet } = messageData;
 
   const listItem = document.createElement('div');
   listItem.className = 'list-item';
-  listItem.addEventListener('click', () =>
-    onListItemClick(messageId, messageData)
-  );
+  listItem.addEventListener('click', () => onListItemClick(messageData));
 
   listItem.innerHTML = `
-    <div class="sender">${sender}</div>
+    <div class="sender">
+      <span>${sender}</span>
+      <span>${formatReceived(received)}</span>
+    </div>
     <div class="subject">${subject}</div>
     <div class="snippet">${snippet} ...</div>
   `;
@@ -42,7 +62,7 @@ const generateListItem = (messageId, messageData) => {
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    moveToTrash(messageId);
+    moveToTrash(id);
   });
 
   listItem.appendChild(btn);
@@ -53,10 +73,10 @@ const generateListItem = (messageId, messageData) => {
 export const generateList = () => {
   chrome.storage.session.get(['unreadMessages'], (result) => {
     const messages = result.unreadMessages;
-    console.log('MESSAGES => ', Object.keys(messages).length);
-    const listItems = Object.entries(messages).map(([id, data]) =>
-      generateListItem(id, data)
-    );
+    const listItems = messages
+      // .sort((a, b) => b.internalDate - a.internalDate)
+      .map(generateListItem);
+
     listContainer.innerHTML = '';
     listContainer.append(...listItems);
   });

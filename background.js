@@ -49,8 +49,6 @@ const getMessageDetails = async (messageId, token) => {
   return fetch(apiUrl, { method: 'GET', headers })
     .then((response) => response.json())
     .then((messageDetails) => {
-      console.log(messageDetails);
-
       const senderValue = messageDetails.payload.headers.find((header) =>
         /from/i.test(header.name)
       ).value;
@@ -83,44 +81,55 @@ const getMessageDetails = async (messageId, token) => {
 
       return {
         id: messageDetails.id,
+        threadId: messageDetails.threadId,
         sender,
         subject,
         snippet: messageDetails.snippet,
-        body: bodyHtml
+        body: bodyHtml,
+        internalDate: messageDetails.internalDate
       };
     });
 };
 
 const setMessageData = async (token) => {
-  console.log('checking email...');
   try {
     const data = await getUnread(token);
-    const unreadMessages = data.messages;
+    const allUnread = data.messages;
 
-    if (!unreadMessages || unreadMessages.length === 0) {
+    if (!allUnread || allUnread.length === 0) {
       return;
     }
 
-    const requests = unreadMessages.map((message) =>
+    const requests = allUnread.map((message) =>
       getMessageDetails(message.id, token)
     );
 
     Promise.all(requests).then((messages) => {
-      const unreadMessages = messages.reduce((acc, message) => {
-        acc[message.id] = {
-          sender: message.sender,
-          subject: message.subject,
-          snippet: message.snippet,
-          body: message.body
-        };
+      const sorted = messages.sort((a, b) => b.internalDate - a.internalDate);
+
+      const uniqueThreadIds = new Set();
+
+      const unreadMessages = sorted.reduce((acc, message) => {
+        const threadIds = acc.map((m) => m.threadId);
+        if (!uniqueThreadIds.has(message.threadId)) {
+          uniqueThreadIds.add(message.threadId);
+
+          acc.push({
+            id: message.id,
+            sender: message.sender,
+            subject: message.subject,
+            snippet: message.snippet,
+            body: message.body,
+            received: message.internalDate
+          });
+        }
 
         return acc;
-      }, {});
+      }, []);
 
       chrome.storage.session.set({ unreadMessages });
+      chrome.action.setBadgeText({ text: String(unreadMessages.length) });
     });
-
-    chrome.action.setBadgeText({ text: String(unreadMessages.length) });
   } catch (error) {
     console.error('Error:', error);
   }
