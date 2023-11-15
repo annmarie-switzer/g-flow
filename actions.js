@@ -1,18 +1,5 @@
 import { generateList } from './popup.js';
 
-export const resetView = () => {
-  const listContainer = document.getElementById('list-container');
-  const messageContainer = document.getElementById('message-container');
-  messageContainer.innerHTML = '';
-  messageContainer.style.display = 'none';
-  listContainer.style.display = 'flex';
-};
-
-export const goBack = () => {
-  generateList();
-  resetView();
-};
-
 export const markRead = async (id) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
@@ -61,21 +48,33 @@ export const markUnread = async (id) => {
     });
 };
 
-export const moveToTrash = async (id, reset = false) => {
+export const moveToTrash = async (id) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
   });
 
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/trash`;
   const headers = new Headers({
     Authorization: `Bearer ${token}`
   });
 
-  await fetch(apiUrl, { method: 'POST', headers });
-  await chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-  generateList();
+  const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/trash`;
+  const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
 
-  if (reset) {
-    resetView();
+  const modifyBody = JSON.stringify({
+    removeLabelIds: ['INBOX']
+  });
+
+  const trashRes = await fetch(trashUrl, { method: 'POST', headers });
+  const modifyRes = await fetch(modifyUrl, {
+    method: 'POST',
+    headers,
+    body: modifyBody
+  });
+
+  if (!trashRes.ok || !modifyRes.ok) {
+    throw new Error('Failed to move message to trash or remove from inbox');
   }
+
+  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
+  generateList();
 };

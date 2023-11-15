@@ -20,8 +20,6 @@ body {
 
 button {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 6px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -49,19 +47,30 @@ button > svg > path {
   flex-direction: column;
 }
 
+/* LIST VIEW */
 .list-item {
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  height: 110px;
+  gap: 6px;
   border-bottom: solid 0.5px var(--grey);
   cursor: pointer;
   position: relative;
 }
 
+.list-item > button {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  display: none;
+}
+
 .list-item:hover {
   background-color: var(--light-grey);
+}
+
+.list-item:hover > button {
+  display: block;
 }
 
 .sender {
@@ -76,8 +85,13 @@ button > svg > path {
 
 .snippet {
   color: var(--grey);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 32px;
 }
 
+/* MESSAGE VIEW */
 #message-container {
   height: 100%;
   overflow: hidden;
@@ -103,8 +117,6 @@ button > svg > path {
     0px 1px 2px 0px rgba(0, 0, 0, 0.06);
 }
 
-.list-item > button {
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
+.action-row > button:first-child {
+  margin-right: auto;
 }

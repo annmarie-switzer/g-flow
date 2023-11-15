@@ -1,4 +1,5 @@
-import { goBack, markUnread, moveToTrash } from './actions.js';
+import { markUnread, moveToTrash } from './actions.js';
+import { generateList } from './popup.js';
 
 export const actionButton = (details) => {
   const btn = document.createElement('button');
@@ -27,16 +28,15 @@ export const actionButtonRow = (messageId) => {
   row.appendChild(
     actionButton({
       icon: 'back',
-      action: goBack,
-      title: 'Go back',
-      style: { marginRight: 'auto' }
+      action: generateList,
+      title: 'Go back'
     })
   );
 
   row.appendChild(
     actionButton({
       icon: 'delete',
-      action: () => moveToTrash(messageId, true),
+      action: () => moveToTrash(messageId),
       title: 'Move to trash'
     })
   );
