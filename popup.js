@@ -73,14 +73,18 @@ const generateListItem = (messageData) => {
 export const generateList = () => {
   chrome.storage.session.get(['unreadMessages'], (result) => {
     const messages = result.unreadMessages;
-    const listItems = messages.map(generateListItem);
 
-    listContainer.innerHTML = '';
-    listContainer.append(...listItems);
+    if (messages) {
+      const listItems = messages.map(generateListItem);
 
-    messageContainer.innerHTML = '';
-    messageContainer.style.display = 'none';
-    listContainer.style.display = 'flex';
+      listContainer.innerHTML = '';
+      listContainer.append(...listItems);
+
+      messageContainer.innerHTML = '';
+      messageContainer.style.display = 'none';
+      listContainer.style.display = 'flex';
+    }
+    // TODO - empty list
   });
 };
 

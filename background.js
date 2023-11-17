@@ -133,7 +133,7 @@ const setMessageData = async (token) => {
 };
 
 const main = async () => {
-  TOKEN = await getToken();
+  TOKEN = await getToken(); // TODO - don't do this here
   setMessageData(TOKEN);
 };
 

@@ -56,6 +56,7 @@ button > svg > path {
   border-bottom: solid 0.5px var(--grey);
   cursor: pointer;
   position: relative;
+  height: 70px;
 }
 
 .list-item > button {
