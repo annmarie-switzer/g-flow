@@ -1,5 +1,3 @@
-import { generateList } from './popup.js';
-
 export const markRead = async (id) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
@@ -75,6 +73,16 @@ export const moveToTrash = async (id) => {
     throw new Error('Failed to move message to trash or remove from inbox');
   }
 
-  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-  generateList();
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(
+      { action: 'fetchUnreadMessages' },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
 };

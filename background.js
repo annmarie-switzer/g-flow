@@ -142,13 +142,16 @@ main();
 
 // Messaging
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  switch (request.action) {
-    case 'getAccessToken':
+  if (request.action === 'getAccessToken') {
+    if (!TOKEN) {
+      getToken().then(sendResponse);
+      return true;
+    } else {
       sendResponse({ token: TOKEN });
-      break;
-    case 'fetchUnreadMessages':
-      setMessageData(TOKEN).then(sendResponse);
-      break;
+    }
+  } else if (request.action === 'fetchUnreadMessages') {
+    setMessageData(TOKEN).then(sendResponse);
+    return true;
   }
 });
 

@@ -36,7 +36,7 @@ export const actionButtonRow = (messageId) => {
   row.appendChild(
     actionButton({
       icon: 'delete',
-      action: () => moveToTrash(messageId),
+      action: () => moveToTrash(messageId).then(generateList),
       title: 'Move to trash'
     })
   );

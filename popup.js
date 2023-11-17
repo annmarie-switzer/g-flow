@@ -62,7 +62,7 @@ const generateListItem = (messageData) => {
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    moveToTrash(id);
+    moveToTrash(id).then(generateList);
   });
 
   listItem.appendChild(btn);
