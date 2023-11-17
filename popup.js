@@ -84,6 +84,4 @@ export const generateList = () => {
   });
 };
 
-chrome.runtime.sendMessage({ action: 'getAccessToken' }, (response) => {
-  generateList();
-});
+generateList();

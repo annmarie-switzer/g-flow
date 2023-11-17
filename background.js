@@ -144,12 +144,7 @@ main();
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case 'getAccessToken':
-      if (!TOKEN) {
-        getToken().then((token) => sendResponse({ token: TOKEN }));
-        return true;
-      } else {
-        sendResponse({ token: TOKEN });
-      }
+      sendResponse({ token: TOKEN });
       break;
     case 'fetchUnreadMessages':
       setMessageData(TOKEN).then(sendResponse);
