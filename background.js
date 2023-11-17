@@ -1,6 +1,5 @@
 let TOKEN;
 
-// TODO - If not logged in, only display the consent window when the app is interacted with
 const getToken = async () =>
   new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({ interactive: true }, (token) => {
@@ -141,17 +140,22 @@ const main = async () => {
 main();
 
 // Messaging
+// Return `true` for each action to keep the message channel open until sendResponse is called
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getAccessToken') {
-    if (!TOKEN) {
-      getToken().then(sendResponse);
+  switch (request.action) {
+    case 'getAccessToken':
+      if (!TOKEN) {
+        getToken().then((token) => sendResponse({ token: TOKEN }));
+        return true;
+      } else {
+        sendResponse({ token: TOKEN });
+      }
+      break;
+    case 'fetchUnreadMessages':
+      setMessageData(TOKEN).then(sendResponse);
       return true;
-    } else {
-      sendResponse({ token: TOKEN });
-    }
-  } else if (request.action === 'fetchUnreadMessages') {
-    setMessageData(TOKEN).then(sendResponse);
-    return true;
+    default:
+      break;
   }
 });
 
@@ -163,6 +167,7 @@ chrome.runtime.onStartup.addListener(() => {
 // Run program on sign in, clear Chrome storage on sign out
 chrome.identity.onSignInChanged.addListener((account, signedIn) => {
   if (signedIn) {
+    console.log('signed in');
     main();
   } else {
     chrome.storage.session.clear(() => {
