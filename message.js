@@ -16,8 +16,6 @@ export const actionButton = (details) => {
     details.action();
   });
 
-  Object.assign(btn.style, details.style);
-
   return btn;
 };
 

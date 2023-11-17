@@ -29,6 +29,11 @@ button {
   background-color: transparent;
 }
 
+button.square {
+  border-radius: 4px;
+  gap: 6px;
+}
+
 button:hover {
   background-color: rgba(61, 66, 82, 0.1);
 }
@@ -47,9 +52,19 @@ button > svg > path {
   flex-direction: column;
 }
 
+.action-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
+    0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+}
+
 /* LIST VIEW */
 .list-item {
-  padding: 16px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -82,6 +97,10 @@ button > svg > path {
 
 .subject {
   font-size: 18px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 32px;
 }
 
 .snippet {
@@ -108,16 +127,6 @@ button > svg > path {
   overflow: auto;
 }
 
-.action-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.06);
-}
-
-.action-row > button:first-child {
+#message-container .action-row > *:first-child {
   margin-right: auto;
 }
