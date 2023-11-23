@@ -6,6 +6,7 @@
 
 html {
   width: 450px;
+  min-height: 300px;
 }
 
 body {
@@ -111,9 +112,14 @@ button > svg > path {
   padding-right: 32px;
 }
 
+.no-messages {
+  color: var(--grey);
+  font-size: 16px;
+  padding: 12px;
+}
+
 /* MESSAGE VIEW */
 #message-container {
-  height: 700px;
   overflow: hidden;
   gap: 4px;
 }

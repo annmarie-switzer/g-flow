@@ -118,8 +118,15 @@ export const generateList = async () => {
   if (messages) {
     const listItems = messages.map(generateListItem);
     listContainer.append(...listItems);
+  } else {
+    const noMessages = document.createElement('div');
+    noMessages.className = 'no-messages';
+    noMessages.innerHTML = `
+      <div class="no-messages">No unread messages</div>
+    `;
+
+    listContainer.appendChild(noMessages);
   }
-  // TODO - empty list
 
   messageContainer.innerHTML = '';
   messageContainer.style.display = 'none';
