@@ -127,26 +127,21 @@ const setMessageData = async (token) => {
 
     chrome.storage.session.set({ unreadMessages });
     chrome.action.setBadgeText({ text: String(unreadMessages.length) });
+    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
   } catch (error) {
     console.error('Error: ', error);
   }
 };
 
 const main = async () => {
-  TOKEN = await getToken(); // TODO - don't do this here
+  TOKEN = await getToken();
   setMessageData(TOKEN);
-};
-
-const updateIcon = (colorScheme) => {
-  const iconPath =
-    colorScheme === 'dark' ? 'img/flow-dark.png' : 'img/flow-light.png';
-  chrome.action.setIcon({ path: iconPath });
 };
 
 main();
 
 // Messaging
-// Return `true` for each action to keep the message channel open until sendResponse is called
+// Returning `true` keeps the message channel open until `sendResponse` is called
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case 'getAccessToken':
@@ -155,8 +150,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'fetchUnreadMessages':
       setMessageData(TOKEN).then(sendResponse);
       return true;
-    case 'colorSchemeChanged':
-      updateIcon(request.colorScheme);
     default:
       break;
   }

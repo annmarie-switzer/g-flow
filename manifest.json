@@ -5,7 +5,7 @@
   "version": "1.0",
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "img/flow-dark.png"
+    "default_icon": "img/icon.png"
   },
   "oauth2": {
     "client_id": "1020857444789-nnv7gph0vvb3c2e9he1u7tii0c55gkfn.apps.googleusercontent.com",
@@ -18,12 +18,5 @@
   "permissions": ["identity", "storage"],
   "background": {
     "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ]
+  }
 }
