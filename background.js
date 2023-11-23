@@ -137,6 +137,12 @@ const main = async () => {
   setMessageData(TOKEN);
 };
 
+const updateIcon = (colorScheme) => {
+  const iconPath =
+    colorScheme === 'dark' ? 'img/flow-dark.png' : 'img/flow-light.png';
+  chrome.action.setIcon({ path: iconPath });
+};
+
 main();
 
 // Messaging
@@ -145,10 +151,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case 'getAccessToken':
       sendResponse({ token: TOKEN });
-      break;
+      return true;
     case 'fetchUnreadMessages':
       setMessageData(TOKEN).then(sendResponse);
       return true;
+    case 'colorSchemeChanged':
+      updateIcon(request.colorScheme);
     default:
       break;
   }
