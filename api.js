@@ -82,3 +82,21 @@ export const moveToTrash = async (id) => {
     );
   });
 };
+
+export const getEmail = async () => {
+  const { token } = await chrome.runtime.sendMessage({
+    action: 'getAccessToken'
+  });
+
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`
+  });
+
+  const res = await fetch(
+    'https://gmail.googleapis.com/gmail/v1/users/me/profile',
+    { headers }
+  );
+
+  const { emailAddress } = await res.json();
+  return emailAddress;
+};
