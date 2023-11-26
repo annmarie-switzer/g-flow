@@ -12,14 +12,12 @@ export const markRead = async (id) => {
     removeLabelIds: ['UNREAD']
   });
 
-  return fetch(apiUrl, { method: 'POST', headers, body })
-    .then((result) => {
-      chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-      console.log('Email marked as read:', result);
-    })
-    .catch((error) => {
-      console.error('Error marking email as read:', error);
-    });
+  try {
+    await fetch(apiUrl, { method: 'POST', headers, body });
+    chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
+  } catch (e) {
+    console.error('Error marking email as read: ', e);
+  }
 };
 
 export const markUnread = async (id) => {
@@ -36,14 +34,12 @@ export const markUnread = async (id) => {
     addLabelIds: ['UNREAD']
   });
 
-  return fetch(apiUrl, { method: 'POST', headers, body })
-    .then((result) => {
-      chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-      console.log('Email marked as unread:', result);
-    })
-    .catch((error) => {
-      console.error('Error marking email as unread:', error);
-    });
+  try {
+    await fetch(apiUrl, { method: 'POST', headers, body });
+    chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
+  } catch (e) {
+    console.error('Error marking email as unread: ', error);
+  }
 };
 
 export const moveToTrash = async (id) => {

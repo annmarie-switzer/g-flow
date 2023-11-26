@@ -1,7 +1,7 @@
-import { markUnread, moveToTrash } from './actions.js';
+import { markUnread, moveToTrash } from './api.js';
 import { generateList } from './popup.js';
 
-export const actionButton = (details) => {
+const actionButton = (details) => {
   const btn = document.createElement('button');
 
   fetch(`img/${details.icon}.svg`)
@@ -19,7 +19,7 @@ export const actionButton = (details) => {
   return btn;
 };
 
-export const actionButtonRow = (messageId) => {
+const actionButtonRow = (messageId) => {
   const row = document.createElement('div');
   row.className = 'action-row';
 

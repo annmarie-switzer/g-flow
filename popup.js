@@ -1,5 +1,5 @@
 import { generateMessage } from './message.js';
-import { markRead, moveToTrash } from './actions.js';
+import { markRead, moveToTrash } from './api.js';
 
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
