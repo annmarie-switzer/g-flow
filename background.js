@@ -66,9 +66,9 @@ const getMessageDetails = async (messageId) => {
   };
 };
 
-export const getMessages = async () => {
+export const getMessages = async (token) => {
   try {
-    const data = await getUnread(TOKEN);
+    const data = await getUnread(token ?? TOKEN);
     const allUnread = data.messages;
 
     if (!allUnread || allUnread.length === 0) {
