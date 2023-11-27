@@ -1,31 +1,8 @@
+import { getMessage, getUnread } from './api.js';
+
 let TOKEN;
 
-const getToken = async () =>
-  new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(token);
-      }
-    });
-  });
-
-const getUnread = async (token) => {
-  const apiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages';
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
-  const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
-  const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
-
-  return fetch(apiUrlWithQuery, { method: 'GET', headers }).then((response) =>
-    response.json()
-  );
-};
-
-const getSenderInfo = (senderValue) => {
+const formatSender = (senderValue) => {
   let sender = senderValue;
 
   const matches = senderValue.match(/^(.*?) <(.*?)>$/);
@@ -39,32 +16,14 @@ const getSenderInfo = (senderValue) => {
   return sender;
 };
 
-const getMessageDetails = async (messageId, token) => {
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
-  const reponse = await fetch(apiUrl, { method: 'GET', headers });
-  const messageDetails = await reponse.json();
-
-  const senderValue = messageDetails.payload.headers.find((header) =>
-    /from/i.test(header.name)
-  ).value;
-
-  const sender = getSenderInfo(senderValue);
-
-  const subject = messageDetails.payload.headers.find((header) =>
-    /subject/i.test(header.name)
-  ).value;
-
-  const { parts, body } = messageDetails.payload;
+const formatBody = (data) => {
+  const { parts, body } = data;
 
   const endcodedBody = parts
     ? parts.find((p) => p.mimeType === 'text/html')?.body.data
     : body?.data;
 
-  let bodyHtml;
+  let bodyHtml = '';
 
   if (endcodedBody) {
     try {
@@ -78,29 +37,45 @@ const getMessageDetails = async (messageId, token) => {
     }
   }
 
+  return bodyHtml;
+};
+
+const getMessageDetails = async (messageId) => {
+  const messageDetails = await getMessage(messageId, TOKEN);
+
+  const senderValue = messageDetails.payload.headers.find((header) =>
+    /from/i.test(header.name)
+  ).value;
+
+  const sender = formatSender(senderValue);
+
+  const subject = messageDetails.payload.headers.find((header) =>
+    /subject/i.test(header.name)
+  ).value;
+
+  const body = formatBody(messageDetails.payload);
+
   return {
     id: messageDetails.id,
     threadId: messageDetails.threadId,
     sender,
     subject,
     snippet: messageDetails.snippet,
-    body: bodyHtml,
+    body,
     internalDate: messageDetails.internalDate
   };
 };
 
-const setMessageData = async (token) => {
+export const getMessages = async () => {
   try {
-    const data = await getUnread(token);
+    const data = await getUnread(TOKEN);
     const allUnread = data.messages;
 
     if (!allUnread || allUnread.length === 0) {
       return;
     }
 
-    const requests = allUnread.map((message) =>
-      getMessageDetails(message.id, token)
-    );
+    const requests = allUnread.map((message) => getMessageDetails(message.id));
 
     const messages = await Promise.all(requests);
 
@@ -125,59 +100,40 @@ const setMessageData = async (token) => {
       return acc;
     }, []);
 
-    chrome.storage.session.set({ unreadMessages });
+    await chrome.storage.session.set({ unreadMessages });
     chrome.action.setBadgeText({ text: String(unreadMessages.length) });
     chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+
+    return unreadMessages;
   } catch (error) {
-    console.error('Error: ', error);
+    console.error('Error getting messages: ', error);
   }
 };
 
-const main = async () => {
-  TOKEN = await getToken();
-  setMessageData(TOKEN);
-};
+chrome.identity.getAuthToken({ interactive: false }, (token) => {
+  if (!chrome.runtime.lastError && token) {
+    TOKEN = token;
+    getMessages();
+  } else {
+    console.log('User is unauthenticated');
+    chrome.action.setBadgeText({ text: '!' });
+    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+  }
+});
 
-main();
-
-// Messaging
-// Returning `true` keeps the message channel open until `sendResponse` is called
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case 'getAccessToken':
       sendResponse({ token: TOKEN });
       return true;
     case 'fetchUnreadMessages':
-      setMessageData(TOKEN).then(sendResponse);
+      getMessages().then(sendResponse);
       return true;
     default:
       break;
   }
 });
 
-// Run program on browser start
-chrome.runtime.onStartup.addListener(() => {
-  main();
-});
-
-// Run program on sign in, clear Chrome storage on sign out
-chrome.identity.onSignInChanged.addListener((account, signedIn) => {
-  if (signedIn) {
-    console.log('signed in');
-    main();
-  } else {
-    chrome.storage.session.clear(() => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          'Error clearing Chrome storage: ',
-          chrome.runtime.lastError
-        );
-      }
-    });
-  }
-});
-
-// Get new messages every 5 minutes
 const refreshIntervalInMinutes = 5;
 const refreshIntervalInMilliseconds = refreshIntervalInMinutes * 60 * 1000;
-setInterval(main, refreshIntervalInMilliseconds);
+setInterval(getMessages, refreshIntervalInMilliseconds);

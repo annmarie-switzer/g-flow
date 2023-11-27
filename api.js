@@ -1,3 +1,52 @@
+export const getEmail = async () => {
+  const { token } = await chrome.runtime.sendMessage({
+    action: 'getAccessToken'
+  });
+
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`
+  });
+
+  const res = await fetch(
+    'https://gmail.googleapis.com/gmail/v1/users/me/profile',
+    { headers }
+  );
+
+  const { emailAddress } = await res.json();
+  return emailAddress;
+};
+
+export const getUnread = async (token) => {
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`
+  });
+
+  const apiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages';
+
+  const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
+  const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
+
+  const response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+  const data = await response.json();
+
+  if (data.error) {
+    console.error('Error fetching unread messages: ', data.error);
+  }
+
+  return data;
+};
+
+export const getMessage = async (id, token) => {
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`
+  });
+
+  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}`;
+
+  const reponse = await fetch(apiUrl, { method: 'GET', headers });
+  return reponse.json();
+};
+
 export const markRead = async (id) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
@@ -81,22 +130,4 @@ export const moveToTrash = async (id) => {
       }
     );
   });
-};
-
-export const getEmail = async () => {
-  const { token } = await chrome.runtime.sendMessage({
-    action: 'getAccessToken'
-  });
-
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
-  const res = await fetch(
-    'https://gmail.googleapis.com/gmail/v1/users/me/profile',
-    { headers }
-  );
-
-  const { emailAddress } = await res.json();
-  return emailAddress;
 };
