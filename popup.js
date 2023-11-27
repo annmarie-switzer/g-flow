@@ -1,4 +1,4 @@
-import { getEmail, markRead, moveToTrash } from './api.js';
+import { getEmail, getEvents, markRead, moveToTrash } from './api.js';
 import { generateMessage } from './message.js';
 import { getMessages } from './background.js';
 
@@ -118,7 +118,13 @@ export const generateList = async () => {
 
 chrome.identity.getAuthToken({ interactive: true }, (token) => {
   if (!chrome.runtime.lastError && token) {
-    getMessages(token).then(generateList);
+    getMessages(token).then(() => {
+      generateList();
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      getEvents(tomorrow).then(console.log);
+    });
   } else {
     console.error('Auth error: ', chrome.runtime.lastError);
   }

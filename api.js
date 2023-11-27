@@ -131,3 +131,36 @@ export const moveToTrash = async (id) => {
     );
   });
 };
+
+export const getEvents = async (date) => {
+  const startOfDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+
+  const endOfDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + 1
+  );
+
+  const { token } = await chrome.runtime.sendMessage({
+    action: 'getAccessToken'
+  });
+
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`
+  });
+
+  const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${startOfDay.toISOString()}&timeMax=${endOfDay.toISOString()}&singleEvents=true&orderBy=startTime`;
+
+  const response = await fetch(url, { headers });
+
+  const data = await response.json();
+  if (data.items) {
+    return data.items;
+  } else {
+    console.log('No events found.');
+  }
+};
