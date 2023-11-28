@@ -66,9 +66,9 @@ const getMessageDetails = async (messageId) => {
   };
 };
 
-export const getMessages = async (token) => {
+const getMessages = async () => {
   try {
-    const data = await getUnread(token ?? TOKEN);
+    const data = await getUnread(TOKEN);
     const allUnread = data.messages;
 
     if (!allUnread || allUnread.length === 0) {
@@ -110,6 +110,7 @@ export const getMessages = async (token) => {
   }
 };
 
+// On startup, access the token, fetch messages, and set data in storage
 chrome.identity.getAuthToken({ interactive: false }, (token) => {
   if (!chrome.runtime.lastError && token) {
     TOKEN = token;
@@ -117,14 +118,22 @@ chrome.identity.getAuthToken({ interactive: false }, (token) => {
   } else {
     console.log('User is unauthenticated');
     chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+    chrome.action.setBadgeBackgroundColor({ color: '#808080' });
   }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
+    // When a token is requested, if it doesn't exist, fetch it and fetch message data
     case 'getAccessToken':
-      sendResponse({ token: TOKEN });
+      if (TOKEN) {
+        sendResponse({ token: TOKEN });
+      } else {
+        chrome.identity.getAuthToken({ interactive: true }, (token) => {
+          TOKEN = token;
+          getMessages().then(() => sendResponse({ token: TOKEN }));
+        });
+      }
       return true;
     case 'fetchUnreadMessages':
       getMessages().then(sendResponse);

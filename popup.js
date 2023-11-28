@@ -1,6 +1,5 @@
 import { getEmail, getEvents, markRead, moveToTrash } from './api.js';
 import { generateMessage } from './message.js';
-import { getMessages } from './background.js';
 
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
@@ -116,16 +115,14 @@ export const generateList = async () => {
   listContainer.style.display = 'flex';
 };
 
-chrome.identity.getAuthToken({ interactive: true }, (token) => {
-  if (!chrome.runtime.lastError && token) {
-    getMessages(token).then(() => {
-      generateList();
-
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      getEvents(tomorrow).then(console.log);
-    });
+chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {
+  if (!chrome.runtime.lastError && res.token) {
+    generateList();
   } else {
-    console.error('Auth error: ', chrome.runtime.lastError);
+    console.error('Error getting access token: ', chrome.runtime.lastError);
   }
 });
+
+// const tomorrow = new Date();
+// tomorrow.setDate(tomorrow.getDate() + 1);
+// getEvents(tomorrow).then(console.log);
