@@ -6,7 +6,6 @@
 
 html {
   width: 450px;
-  min-height: 300px;
 }
 
 body {
@@ -17,6 +16,62 @@ body {
   font-size: 14px;
   color: var(--black);
   background-color: #fff;
+}
+
+#main {
+  display: flex;
+  flex-direction: column;
+}
+
+#list-container {
+  height: 400px;
+  overflow: auto;
+  border: solid orange 3px;
+}
+
+#events-container {
+  height: 150px;
+  padding: 0 32px;
+  box-sizing: border-box;
+  display: flex;
+  border: solid green 2px;
+}
+
+#timeline {
+  height: 30px;
+  flex: auto;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  position: relative;
+  /* border: solid red 2px; */
+}
+
+.event {
+  position: absolute;
+  background-color: pink;
+  height: 8px;
+  border-radius: 16px;
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tick {
+  height: 30px;
+  width: 2px;
+  background-color: #000;
+}
+
+.tick-label {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
 }
 
 button {
@@ -47,12 +102,6 @@ button > svg > path {
   fill: var(--black);
 }
 
-#list-container,
-#message-container {
-  display: flex;
-  flex-direction: column;
-}
-
 .action-row {
   display: flex;
   justify-content: flex-end;
@@ -61,6 +110,12 @@ button > svg > path {
   padding: 8px;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
     0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+}
+
+#list-container,
+#message-container {
+  display: flex;
+  flex-direction: column;
 }
 
 /* LIST VIEW */
