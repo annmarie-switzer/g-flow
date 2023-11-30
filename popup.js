@@ -39,31 +39,32 @@ const generateListItem = (messageData) => {
   listItem.className = 'list-item';
   listItem.addEventListener('click', () => onListItemClick(messageData));
 
-  listItem.innerHTML = `
-    <div class="sender">
-      <span>${sender}</span>
-      <span>${formatReceived(received)}</span>
-    </div>
-    <div class="subject">${subject}</div>
-    <div class="snippet">${snippet} ...</div>
-  `;
-
   const btn = document.createElement('button');
-
-  fetch('img/delete.svg')
-    .then((response) => response.text())
-    .then((svgContent) => {
-      btn.innerHTML = svgContent;
-    });
-
   btn.title = 'Move to trash';
+  btn.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>';
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     moveToTrash(id).then(generateList);
   });
 
-  listItem.appendChild(btn);
+  const btnContainer = document.createElement('div');
+  btnContainer.className = 'btn-container';
+  btnContainer.appendChild(btn);
+  listItem.appendChild(btnContainer);
+
+  listItem.insertAdjacentHTML(
+    'beforeend',
+    `<div class="data">
+    <div class="first-row">
+      <div class="subject">${subject}</div>
+      <div class="received">${formatReceived(received)}</div>
+    </div>
+    <div class="sender">${sender}</div>
+  </div>
+  `
+  );
 
   return listItem;
 };

@@ -5,7 +5,7 @@
 }
 
 html {
-  width: 450px;
+  width: 400px;
 }
 
 body {
@@ -23,57 +23,6 @@ body {
   flex-direction: column;
 }
 
-#list-container {
-  height: 400px;
-  overflow: auto;
-  border: solid orange 3px;
-}
-
-#events-container {
-  height: 150px;
-  padding: 0 32px;
-  box-sizing: border-box;
-  display: flex;
-  border: solid green 2px;
-}
-
-#timeline {
-  height: 30px;
-  flex: auto;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  position: relative;
-  /* border: solid red 2px; */
-}
-
-.event {
-  position: absolute;
-  background-color: pink;
-  height: 8px;
-  border-radius: 16px;
-}
-
-.x-axis {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.tick {
-  height: 30px;
-  width: 2px;
-  background-color: #000;
-}
-
-.tick-label {
-  position: absolute;
-  top: -20px;
-  transform: translateX(-50%);
-}
-
 button {
   display: flex;
   align-items: center;
@@ -81,13 +30,16 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 50%;
-  padding: 6px;
+  padding: 4px;
   background-color: transparent;
+  font-family: inherit;
+  font-weight: inherit;
 }
 
 button.square {
   border-radius: 4px;
   gap: 6px;
+  padding: 4px;
 }
 
 button:hover {
@@ -107,74 +59,142 @@ button > svg > path {
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  padding: 6px;
+  box-shadow: 0px 2px 6px 1px rgba(0, 0, 0, 0.1),
+    0px 2px 4px 1px rgba(0, 0, 0, 0.06);
 }
 
-#list-container,
-#message-container {
+/* LIST */
+#list-container {
   display: flex;
   flex-direction: column;
+  height: 300px;
+  overflow-y: auto;
 }
 
-/* LIST VIEW */
 .list-item {
-  padding: 12px 16px;
   display: flex;
-  flex-direction: column;
+  padding: 8px;
   gap: 6px;
-  border-bottom: solid 0.5px var(--grey);
   cursor: pointer;
-  position: relative;
-  height: 70px;
-}
-
-.list-item > button {
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  display: none;
+  height: 40px;
+  border-bottom: solid 0.5px var(--grey);
 }
 
 .list-item:hover {
   background-color: var(--light-grey);
 }
 
-.list-item:hover > button {
-  display: block;
+.btn-container {
+  display: flex;
+  align-items: center;
 }
 
-.sender {
+.btn-container > button {
+  visibility: hidden;
+}
+
+.list-item:hover > .btn-container > button {
+  visibility: visible;
+}
+
+.data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.first-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .subject {
-  font-size: 18px;
+  width: 275px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  padding-right: 32px;
 }
 
-.snippet {
+.received {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.sender {
+  font-size: 12px;
   color: var(--grey);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  padding-right: 32px;
 }
 
 .no-messages {
   color: var(--grey);
-  font-size: 16px;
-  padding: 12px;
+  margin: 12px auto;
 }
 
-/* MESSAGE VIEW */
+/* EVENTS */
+#events-container {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light-grey);
+  border-top: solid 2px var(--grey);
+  font-size: 12px;
+}
+
+#event-list {
+  border: solid orange;
+  flex: 1;
+}
+
+#timeline {
+  border: solid blue;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0px 16px;
+  box-sizing: border-box;
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 14px;
+  width: 100%;
+  /* flex: auto; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tick {
+  height: 40px;
+  width: 1.5px;
+  background-color: var(--grey);
+}
+
+.tick-label {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+}
+
+.event {
+  position: absolute;
+  background-color: pink;
+  height: 8px;
+  border-radius: 16px;
+}
+
+/* MESSAGE */
 #message-container {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   gap: 4px;
 }
