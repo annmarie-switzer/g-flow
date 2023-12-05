@@ -2,6 +2,7 @@ import { getEmail, markRead, moveToTrash } from './api.js';
 import { generateMessage } from './message.js';
 import { generateCalendar } from './calendar.js';
 
+const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
 
@@ -27,7 +28,7 @@ const formatReceived = (received) => {
 const onListItemClick = (message) => {
   generateMessage(message);
 
-  listContainer.style.display = 'none';
+  popupContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
 
   markRead(message.id);
@@ -71,17 +72,17 @@ const generateListItem = (messageData) => {
 };
 
 export const generateList = async () => {
-  listContainer.style.display = 'flex';
+  popupContainer.style.display = 'flex';
   messageContainer.style.display = 'none';
 
   const result = await chrome.storage.session.get(['unreadMessages']);
   const messages = result.unreadMessages;
 
-  const row = document.querySelector('.action-row');
+  const row = document.createElement('div');
+  row.className = 'action-row';
 
   const email = await getEmail();
   const emailButton = document.createElement('button');
-  emailButton.className = 'square';
 
   const response = await fetch('img/forward-to-inbox.svg');
   const svgContent = await response.text();
@@ -113,7 +114,7 @@ export const generateList = async () => {
 
   messageContainer.innerHTML = '';
   messageContainer.style.display = 'none';
-  listContainer.style.display = 'flex';
+  popupContainer.style.display = 'flex';
 };
 
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {

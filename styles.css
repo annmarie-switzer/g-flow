@@ -1,7 +1,4 @@
 :root {
-  --black: #222223;
-  --grey: #676b79;
-  --light-grey: #e6e6e6;
   --blue: #45a9f9;
   --green: #00e676;
   --dark-green: #00a153;
@@ -23,17 +20,18 @@ html {
 
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
   font-family: 'Fira Sans Condensed', sans-serif;
   font-size: 14px;
-  color: var(--black);
+  color: var(--grey8);
   background-color: #fff;
+  position: relative;
+  background-color: var(--grey0);
 }
 
-#main {
+#popup-container {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 button {
@@ -42,32 +40,30 @@ button {
   justify-content: center;
   cursor: pointer;
   border: none;
-  border-radius: 50%;
+  border-radius: 4px;
   padding: 4px;
   background-color: transparent;
   font-family: inherit;
   font-weight: inherit;
-}
-
-button.square {
-  border-radius: 4px;
   gap: 6px;
-  padding: 4px;
 }
 
 button:hover {
-  background-color: rgba(61, 66, 82, 0.1);
+  background-color: #31353a1a;
 }
 
 button:active {
-  background-color: rgba(61, 66, 82, 0.2);
+  background-color: #31353a33;
 }
 
 button > svg > path {
-  fill: var(--black);
+  fill: var(--grey8);
 }
 
 .action-row {
+  position: sticky;
+  top: 0;
+  background-color: var(--grey0);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -88,14 +84,13 @@ button > svg > path {
 .list-item {
   display: flex;
   padding: 8px;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
-  height: 40px;
-  border-bottom: solid 0.5px var(--grey);
+  border-bottom: solid 0.5px var(--grey3);
 }
 
 .list-item:hover {
-  background-color: var(--light-grey);
+  background-color: var(--grey1);
 }
 
 .btn-container {
@@ -134,19 +129,19 @@ button > svg > path {
 .received {
   flex-shrink: 0;
   font-size: 12px;
-  color: var(--grey);
+  color: var(--grey3);
 }
 
 .sender {
   font-size: 12px;
-  color: var(--grey);
+  color: var(--grey3);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .no-messages {
-  color: var(--grey);
+  color: var(--grey3);
   margin: 12px auto;
 }
 
@@ -160,16 +155,37 @@ button > svg > path {
 }
 
 #timeline-actions {
-  flex: 0.5;
-  border: solid purple;
+  flex: 0.3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+}
+
+#timeline-actions > button > svg > path {
+  fill: var(--grey2);
+}
+
+#timeline-actions > button:hover {
+  background-color: #e6e6e61a;
+}
+
+#timeline-actions > button:active {
+  background-color: #e6e6e633;
+}
+
+#timeline-actions > span:first-child {
+  margin-right: auto;
 }
 
 #timeline {
-  flex: 1.5;
+  flex: 1;
   position: relative;
   margin: 0px 24px;
   font-size: 12px;
-  border: solid blue;
 }
 
 .x-axis {
@@ -177,7 +193,6 @@ button > svg > path {
   bottom: 22px;
   width: 100%;
   height: 50%;
-  border: solid red;
 }
 
 .tick {
@@ -227,30 +242,52 @@ button > svg > path {
 }
 
 #event-list {
-  border: solid orange;
   flex: 1;
+  overflow-y: auto;
 }
 
 .event-list-item {
-  border: solid green;
   display: flex;
   justify-content: space-between;
+  padding: 4px 12px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.event-list-item:nth-child(odd) {
+  background-color: var(--grey5);
+}
+
+.event-list-item:hover {
+  color: var(--grey0);
+}
+
+.event-list-item.now > span:last-child {
+  color: var(--green);
+}
+
+.no-events {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 12px;
+  box-sizing: border-box;
 }
 
 /* MESSAGE */
 #message-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  gap: 4px;
 }
 
 .message-body {
-  padding: 12px 16px;
   flex: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   overflow: auto;
 }
 

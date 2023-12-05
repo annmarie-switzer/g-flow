@@ -24,9 +24,10 @@ const renderEventPill = (event, index, width, previousEndTime) => {
 
   let now = new Date();
   // TODO - remove
-  if (now.getHours() > 17) {
-    now.setHours(14, 35, 0, 0);
-  }
+  // if (now.getHours() > 17) {
+  //   now.setHours(14, 35, 0, 0);
+  // }
+  now.setHours(14, 35, 0, 0);
 
   // This is tomorrow
   now.setDate(now.getDate() + 1);
@@ -63,14 +64,17 @@ const renderTick = (hour) => {
 };
 
 const renderNowTick = () => {
-  let hour = new Date().getHours();
-  let minute = new Date().getMinutes();
+  // let hour = new Date().getHours();
+  // let minute = new Date().getMinutes();
 
-  // TODO - remove
-  if (hour > 17) {
-    hour = 14;
-    minute = 35;
-  }
+  // // TODO - remove
+  // if (hour > 17) {
+  //   hour = 14;
+  //   minute = 35;
+  // }
+
+  const hour = 14;
+  const minute = 35;
 
   const tickElement = document.createElement('div');
   tickElement.className = 'tick now';
@@ -81,6 +85,35 @@ const renderNowTick = () => {
 export const generateCalendar = async () => {
   const timelineElement = document.getElementById('timeline');
   const eventListElement = document.getElementById('event-list');
+  const timelineActions = document.getElementById('timeline-actions');
+
+  const todayLabel = document.createElement('span');
+  const today = new Date();
+  todayLabel.textContent = today.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
+  });
+  timelineActions.appendChild(todayLabel);
+
+  const backButton = document.createElement('button');
+  backButton.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>';
+
+  backButton.addEventListener('click', (e) => {
+    console.log(e);
+  });
+
+  const forwardButton = document.createElement('button');
+  forwardButton.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>';
+
+  forwardButton.addEventListener('click', (e) => {
+    console.log(e);
+  });
+
+  timelineActions.appendChild(backButton);
+  timelineActions.appendChild(forwardButton);
 
   const xAxisElement = document.createElement('div');
   xAxisElement.className = 'x-axis';
@@ -123,14 +156,24 @@ export const generateCalendar = async () => {
     const eventListItem = document.createElement('div');
     eventListItem.className = 'event-list-item';
     eventListItem.innerHTML = `
-      <div>${event.summary}</div>
-      <div>
+      <span>${event.summary}</span>
+      <span>
         ${event.start.dateTime.slice(11, 16)} - ${event.end.dateTime.slice(
       11,
       16
     )}
-      </div>
+      </span>
     `;
     eventListElement.appendChild(eventListItem);
   });
+
+  if (events.length === 0) {
+    const noEvents = document.createElement('div');
+    noEvents.className = 'no-events';
+    noEvents.innerHTML = `
+      <div class="no-events">No events today</div>
+    `;
+
+    eventListElement.appendChild(noEvents);
+  }
 };
