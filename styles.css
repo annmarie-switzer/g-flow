@@ -2,6 +2,19 @@
   --black: #222223;
   --grey: #676b79;
   --light-grey: #e6e6e6;
+  --blue: #45a9f9;
+  --green: #00e676;
+  --dark-green: #00a153;
+
+  --grey0: #e6e6e6;
+  --grey1: #cdcdcd;
+  --grey2: #bbbbbb;
+  --grey3: #757575;
+  --grey4: #676b79;
+  --grey5: #3e4250;
+  --grey6: #373b41;
+  --grey7: #31353a;
+  --grey8: #2a2c2d;
 }
 
 html {
@@ -142,9 +155,75 @@ button > svg > path {
   height: 200px;
   display: flex;
   flex-direction: column;
-  background-color: var(--light-grey);
-  border-top: solid 2px var(--grey);
+  background-color: var(--grey7);
+  color: var(--grey2);
+}
+
+#timeline-actions {
+  flex: 0.5;
+  border: solid purple;
+}
+
+#timeline {
+  flex: 1.5;
+  position: relative;
+  margin: 0px 24px;
   font-size: 12px;
+  border: solid blue;
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 22px;
+  width: 100%;
+  height: 50%;
+  border: solid red;
+}
+
+.tick {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 1px;
+  background-color: var(--grey2);
+}
+
+.tick:nth-child(even) {
+  background-color: var(--grey3);
+}
+
+.tick.now {
+  width: 2px;
+  background-color: var(--dark-green);
+  border-radius: 16px;
+}
+
+.tick-label {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+  width: max-content;
+}
+
+.event {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 16px;
+  background-color: var(--blue);
+}
+
+.event.now {
+  background-color: var(--green);
+}
+
+.event.tentative {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.event.tentative.now {
+  box-shadow: inset 0 0 0 1px var(--green);
 }
 
 #event-list {
@@ -152,43 +231,10 @@ button > svg > path {
   flex: 1;
 }
 
-#timeline {
-  border: solid blue;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  position: relative;
-  margin: 0px 16px;
-  box-sizing: border-box;
-}
-
-.x-axis {
-  position: absolute;
-  bottom: 14px;
-  width: 100%;
-  /* flex: auto; */
+.event-list-item {
+  border: solid green;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.tick {
-  height: 40px;
-  width: 1.5px;
-  background-color: var(--grey);
-}
-
-.tick-label {
-  position: absolute;
-  top: -20px;
-  transform: translateX(-50%);
-}
-
-.event {
-  position: absolute;
-  background-color: pink;
-  height: 8px;
-  border-radius: 16px;
 }
 
 /* MESSAGE */

@@ -1,5 +1,6 @@
-import { getEmail, getEvents, markRead, moveToTrash } from './api.js';
+import { getEmail, markRead, moveToTrash } from './api.js';
 import { generateMessage } from './message.js';
+import { generateCalendar } from './calendar.js';
 
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
@@ -113,59 +114,6 @@ export const generateList = async () => {
   messageContainer.innerHTML = '';
   messageContainer.style.display = 'none';
   listContainer.style.display = 'flex';
-};
-
-const generateCalendar = async () => {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate());
-
-  const events = await getEvents(tomorrow);
-  console.log(events);
-
-  const timelineElement = document.getElementById('timeline');
-
-  // Render X-axis with tick marks and labels from 9am to 5pm
-  const xAxisElement = document.createElement('div');
-  xAxisElement.className = 'x-axis';
-
-  for (let hour = 9; hour <= 17; hour++) {
-    const tickElement = document.createElement('div');
-    tickElement.className = 'tick';
-    tickElement.style.left = `${((hour - 9) / 8) * 100}%`;
-
-    const tickLabelElement = document.createElement('div');
-    tickLabelElement.className = 'tick-label';
-    tickLabelElement.textContent = hour % 12 === 0 ? '12' : hour % 12; // Format hour labels (12-hour format)
-
-    tickElement.appendChild(tickLabelElement);
-    xAxisElement.appendChild(tickElement);
-  }
-
-  timelineElement.appendChild(xAxisElement);
-
-  // Function to convert datetime to pixel position
-  function datetimeToPosition(dateTime, timeZone) {
-    const date = new Date(dateTime);
-    const options = { timeZone: timeZone };
-    const totalMinutes = (date.getHours() - 9) * 60 + date.getMinutes();
-    return (totalMinutes / (8 * 60)) * timelineElement.clientWidth;
-  }
-
-  // Render events on the timeline
-  events.forEach((event) => {
-    const startPixel = datetimeToPosition(
-      event.start.dateTime,
-      event.start.timeZone
-    );
-    const endPixel = datetimeToPosition(event.end.dateTime, event.end.timeZone);
-
-    const eventElement = document.createElement('div');
-    eventElement.className = 'event';
-    eventElement.style.left = `${startPixel}px`;
-    eventElement.style.width = `${endPixel - startPixel}px`;
-
-    timelineElement.appendChild(eventElement);
-  });
 };
 
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {
