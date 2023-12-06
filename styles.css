@@ -1,5 +1,6 @@
 :root {
   --blue: #45a9f9;
+  --dark-blue: #3076ae;
   --green: #00e676;
   --dark-green: #00a153;
   --orange: #ffa500;
@@ -23,8 +24,6 @@ body {
   margin: 0;
   font-family: 'Fira Sans Condensed', sans-serif;
   font-size: 14px;
-  color: var(--grey8);
-  background-color: #fff;
   position: relative;
   background-color: var(--grey8);
   color: var(--grey2);
@@ -230,10 +229,30 @@ button > svg > path {
   transform: translateY(-50%);
   border-radius: 16px;
   background-color: var(--blue);
+  cursor: pointer;
+}
+
+.event:hover {
+  outline-style: solid;
+  outline-width: 1.5px;
+  outline-offset: 2px;
+  outline-color: var(--blue);
 }
 
 .event.now {
   background-color: var(--green);
+}
+
+.event.now:hover {
+  outline-color: var(--green);
+}
+
+.event.past {
+  background-color: var(--dark-blue);
+}
+
+.event.past:hover {
+  outline-color: var(--dark-blue);
 }
 
 .event.tentative {

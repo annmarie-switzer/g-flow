@@ -6,6 +6,18 @@ const datetimeToPosition = (dateTime, width, previousEndTime) => {
   return (totalMinutes / (8 * 60)) * width;
 };
 
+const formatTime = (dateTime, withPeriod = true) => {
+  const date = new Date(dateTime);
+  const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+  let time = date.toLocaleTimeString('en-US', options).toLowerCase();
+
+  if (!withPeriod) {
+    time = time.slice(0, -3);
+  }
+
+  return time;
+};
+
 const renderEventPill = (event, index, width, previousEndTime) => {
   const pillHeight = 8;
 
@@ -22,26 +34,29 @@ const renderEventPill = (event, index, width, previousEndTime) => {
     eventElement.classList.add('tentative');
   }
 
-  let now = new Date();
+  const now = new Date();
   // TODO - remove
-  // if (now.getHours() > 17) {
-  //   now.setHours(14, 35, 0, 0);
-  // }
-  now.setHours(14, 35, 0, 0);
+  // now.setHours(14, 35, 0, 0);
+  // now.setDate(now.getDate() + 1);
 
-  // This is tomorrow
-  now.setDate(now.getDate() + 1);
-
-  let eventStart = new Date(event.start.dateTime);
-  let eventEnd = new Date(event.end.dateTime);
+  const eventStart = new Date(event.start.dateTime);
+  const eventEnd = new Date(event.end.dateTime);
 
   if (now >= eventStart && now <= eventEnd) {
     eventElement.classList.add('now');
   }
 
-  if (previousEndTime !== null && event.start.dateTime <= previousEndTime) {
+  if (eventEnd < now) {
+    eventElement.classList.add('past');
+  }
+
+  if (previousEndTime !== null && event.start.dateTime < previousEndTime) {
     eventElement.style.transform = `translateY(${pillHeight * index - 8}px)`;
   }
+
+  eventElement.addEventListener('click', () => {
+    window.open(event.htmlLink, '_blank');
+  });
 
   return eventElement;
 };
@@ -64,17 +79,12 @@ const renderTick = (hour) => {
 };
 
 const renderNowTick = () => {
-  // let hour = new Date().getHours();
-  // let minute = new Date().getMinutes();
+  const hour = new Date().getHours();
+  const minute = new Date().getMinutes();
 
   // // TODO - remove
-  // if (hour > 17) {
-  //   hour = 14;
-  //   minute = 35;
-  // }
-
-  const hour = 14;
-  const minute = 35;
+  // const hour = 14;
+  // const minute = 35;
 
   const tickElement = document.createElement('div');
   tickElement.className = 'tick now';
@@ -82,11 +92,7 @@ const renderNowTick = () => {
   return tickElement;
 };
 
-export const generateCalendar = async () => {
-  const timelineElement = document.getElementById('timeline');
-  const eventListElement = document.getElementById('event-list');
-  const timelineActions = document.getElementById('timeline-actions');
-
+const renderTodayLabel = () => {
   const todayLabel = document.createElement('span');
   const today = new Date();
   todayLabel.textContent = today.toLocaleDateString(undefined, {
@@ -94,9 +100,12 @@ export const generateCalendar = async () => {
     month: 'short',
     day: 'numeric'
   });
-  timelineActions.appendChild(todayLabel);
+  return todayLabel;
+};
 
+const renderButtons = () => {
   const backButton = document.createElement('button');
+  backButton.title = 'Previous day';
   backButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>';
 
@@ -105,6 +114,7 @@ export const generateCalendar = async () => {
   });
 
   const forwardButton = document.createElement('button');
+  forwardButton.title = 'Next day';
   forwardButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>';
 
@@ -112,12 +122,26 @@ export const generateCalendar = async () => {
     console.log(e);
   });
 
-  timelineActions.appendChild(backButton);
-  timelineActions.appendChild(forwardButton);
+  return { backButton, forwardButton };
+};
+
+export const generateCalendar = async () => {
+  const today = new Date();
+
+  const timelineElement = document.getElementById('timeline');
+  const eventListElement = document.getElementById('event-list');
+  const timelineActions = document.getElementById('timeline-actions');
+
+  const todayLabel = renderTodayLabel();
+  timelineActions.appendChild(todayLabel);
+
+  // TODO - not sure if we want this functionality
+  // const { backButton, forwardButton } = renderButtons(today);
+  // timelineActions.appendChild(backButton);
+  // timelineActions.appendChild(forwardButton);
 
   const xAxisElement = document.createElement('div');
   xAxisElement.className = 'x-axis';
-
   timelineElement.appendChild(xAxisElement);
 
   for (let hour = 9; hour <= 17; hour++) {
@@ -128,18 +152,20 @@ export const generateCalendar = async () => {
   const nowTickElement = renderNowTick();
   xAxisElement.appendChild(nowTickElement);
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const events = await getEvents(tomorrow);
+  const events = await getEvents(today);
   console.log(events);
 
-  events.forEach((event, i) => {
-    if (event.status === 'cancelled') {
-      return null;
-    }
+  // only render events from 9 to 5
+  const eventsToRender = events.filter((e) => {
+    const startTime = new Date(e.start.dateTime);
+    const endTime = new Date(e.end.dateTime);
+    const startHour = startTime.getHours();
+    const endHour = endTime.getHours();
+    return !(endHour < 9 || startHour > 17);
+  });
 
-    // event pills
+  // pills
+  eventsToRender.forEach((event, i) => {
     const previousEndTime = events[i - 1]?.end.dateTime ?? null;
 
     const eventElement = renderEventPill(
@@ -150,27 +176,35 @@ export const generateCalendar = async () => {
     );
 
     timelineElement.appendChild(eventElement);
+  });
 
-    // event list
-    // TODO - don't show past events
+  // list
+  const futureEvents = eventsToRender.filter(
+    (e) => new Date(e.start.dateTime) >= today
+  );
+
+  futureEvents.forEach((event) => {
     const eventListItem = document.createElement('div');
     eventListItem.className = 'event-list-item';
+    eventListItem.title = 'Open in Google Calendar';
     eventListItem.innerHTML = `
       <span>${event.summary}</span>
-      <span>
-        ${event.start.dateTime.slice(11, 16)} - ${event.end.dateTime.slice(
-      11,
-      16
-    )}
-      </span>
+      <span>${formatTime(event.start.dateTime, false)} - ${formatTime(
+      event.end.dateTime
+    )}</span>
     `;
+
+    eventListItem.addEventListener('click', () => {
+      window.open(event.htmlLink, '_blank');
+    });
+
     eventListElement.appendChild(eventListItem);
   });
 
-  if (events.length === 0) {
+  if (futureEvents.length === 0) {
     const noEvents = document.createElement('div');
     noEvents.className = 'no-events';
-    noEvents.textContent = 'No events today';
+    noEvents.textContent = 'No more events today';
 
     eventListElement.appendChild(noEvents);
   }
