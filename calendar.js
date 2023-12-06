@@ -170,9 +170,7 @@ export const generateCalendar = async () => {
   if (events.length === 0) {
     const noEvents = document.createElement('div');
     noEvents.className = 'no-events';
-    noEvents.innerHTML = `
-      <div class="no-events">No events today</div>
-    `;
+    noEvents.textContent = 'No events today';
 
     eventListElement.appendChild(noEvents);
   }
