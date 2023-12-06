@@ -1,6 +1,6 @@
 import { getEvents } from './api.js';
 
-const datetimeToPosition = (dateTime, width, previousEndTime) => {
+const datetimeToPosition = (dateTime, width) => {
   const date = new Date(dateTime);
   const totalMinutes = (date.getHours() - 9) * 60 + date.getMinutes();
   return (totalMinutes / (8 * 60)) * width;
@@ -35,9 +35,6 @@ const renderEventPill = (event, index, width, previousEndTime) => {
   }
 
   const now = new Date();
-  // TODO - remove
-  // now.setHours(14, 35, 0, 0);
-  // now.setDate(now.getDate() + 1);
 
   const eventStart = new Date(event.start.dateTime);
   const eventEnd = new Date(event.end.dateTime);
@@ -82,10 +79,6 @@ const renderNowTick = () => {
   const hour = new Date().getHours();
   const minute = new Date().getMinutes();
 
-  // // TODO - remove
-  // const hour = 14;
-  // const minute = 35;
-
   const tickElement = document.createElement('div');
   tickElement.className = 'tick now';
   tickElement.style.left = `${(((hour - 9) * 60 + minute) / (8 * 60)) * 100}%`;
@@ -103,28 +96,6 @@ const renderTodayLabel = () => {
   return todayLabel;
 };
 
-const renderButtons = () => {
-  const backButton = document.createElement('button');
-  backButton.title = 'Previous day';
-  backButton.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>';
-
-  backButton.addEventListener('click', (e) => {
-    console.log(e);
-  });
-
-  const forwardButton = document.createElement('button');
-  forwardButton.title = 'Next day';
-  forwardButton.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>';
-
-  forwardButton.addEventListener('click', (e) => {
-    console.log(e);
-  });
-
-  return { backButton, forwardButton };
-};
-
 export const generateCalendar = async () => {
   const today = new Date();
 
@@ -134,11 +105,6 @@ export const generateCalendar = async () => {
 
   const todayLabel = renderTodayLabel();
   timelineActions.appendChild(todayLabel);
-
-  // TODO - not sure if we want this functionality
-  // const { backButton, forwardButton } = renderButtons(today);
-  // timelineActions.appendChild(backButton);
-  // timelineActions.appendChild(forwardButton);
 
   const xAxisElement = document.createElement('div');
   xAxisElement.className = 'x-axis';
