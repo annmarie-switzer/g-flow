@@ -233,7 +233,8 @@ button > svg > path {
   cursor: pointer;
 }
 
-.event:hover {
+.event:not(.past):hover,
+.event:not(.past).hover {
   outline-style: solid;
   outline-width: 1.5px;
   outline-offset: 2px;
@@ -244,16 +245,14 @@ button > svg > path {
   background-color: var(--green);
 }
 
-.event.now:hover {
+.event.now:hover,
+.event.now.hover {
   outline-color: var(--green);
 }
 
 .event.past {
   background-color: var(--dark-blue);
-}
-
-.event.past:hover {
-  outline-color: var(--dark-blue);
+  cursor: default;
 }
 
 .event.tentative {
@@ -274,7 +273,8 @@ button > svg > path {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 16px;
+  padding: 4px 8px;
+  margin: 0 16px;
   box-sizing: border-box;
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
@@ -284,12 +284,21 @@ button > svg > path {
   border-bottom: none;
 }
 
-.event-list-item:hover {
-  color: var(--grey0);
+.event-list-item:hover,
+.event-list-item.hover {
+  color: var(--grey8);
+  background-color: var(--blue);
+  border-radius: 8px;
 }
 
-.event-list-item.now > span:last-child {
+.event-list-item.now {
   color: var(--green);
+}
+
+.event-list-item.now:hover,
+.event-list-item.now.hover {
+  color: var(--grey8);
+  background-color: var(--green);
 }
 
 .no-events {

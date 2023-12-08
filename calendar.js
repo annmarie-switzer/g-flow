@@ -1,5 +1,14 @@
 import { getEvents } from './api.js';
 
+const isEndTimeTomorrow = (endTime) => {
+  const now = new Date();
+  const end = new Date(endTime);
+  now.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  now.setDate(now.getDate() + 1);
+  return now.getTime() === end.getTime();
+};
+
 const datetimeToPosition = (dateTime) => {
   const date = new Date(dateTime);
   const totalMinutes = date.getHours() * 60 + date.getMinutes();
@@ -22,13 +31,22 @@ const renderEventPill = (event, index, previousEndTime) => {
   const pillHeight = 8;
 
   const startPixel = datetimeToPosition(event.start.dateTime);
-  const endPixel = datetimeToPosition(event.end.dateTime);
+
+  const endDateTime = new Date(event.end.dateTime);
+
+  if (isEndTimeTomorrow(endDateTime)) {
+    endDateTime.setHours(23);
+    endDateTime.setMinutes(59);
+  }
+
+  const endPixel = datetimeToPosition(endDateTime);
 
   const eventElement = document.createElement('div');
   eventElement.className = 'event';
   eventElement.style.left = `${startPixel}px`;
   eventElement.style.width = `${endPixel - startPixel}px`;
   eventElement.style.height = `${pillHeight}px`;
+  eventElement.dataset.id = event.id;
 
   if (event.status === 'tentative') {
     eventElement.classList.add('tentative');
@@ -123,9 +141,7 @@ export const generateCalendar = async () => {
   // pills
   events.forEach((event, i) => {
     const previousEndTime = events[i - 1]?.end.dateTime ?? null;
-
     const eventElement = renderEventPill(event, i, previousEndTime);
-
     timelineElement.appendChild(eventElement);
   });
 
@@ -148,12 +164,20 @@ export const generateCalendar = async () => {
     const eventListItem = document.createElement('div');
     eventListItem.className = 'event-list-item';
     eventListItem.title = 'Open in Google Calendar';
+    eventListItem.dataset.id = event.id;
     eventListItem.innerHTML = `
       <span>${event.summary}</span>
       <span>${formatTime(event.start.dateTime, false)} - ${formatTime(
       event.end.dateTime
     )}</span>
     `;
+
+    const now = new Date();
+    const start = new Date(event.start.dateTime);
+    const end = new Date(event.end.dateTime);
+    if (now >= start && now <= end) {
+      eventListItem.classList.add('now');
+    }
 
     eventListItem.addEventListener('click', () => {
       window.open(event.htmlLink, '_blank');
@@ -170,5 +194,23 @@ export const generateCalendar = async () => {
     eventListElement.appendChild(noEvents);
   }
 
+  // scroll the chart to 9am by default, or to the end if it's after 5pm
   timelineElement.scrollLeft = today.getHours() < 17 ? 320 : 561;
+
+  // Add event listeners to the event pills and list items
+  document.querySelectorAll('.event, .event-list-item').forEach((element) => {
+    element.addEventListener('mouseover', () => {
+      const id = element.dataset.id;
+      document.querySelectorAll(`[data-id="${id}"]`).forEach((el) => {
+        el.classList.add('hover');
+      });
+    });
+
+    element.addEventListener('mouseout', () => {
+      const id = element.dataset.id;
+      document.querySelectorAll(`[data-id="${id}"]`).forEach((el) => {
+        el.classList.remove('hover');
+      });
+    });
+  });
 };
