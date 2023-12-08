@@ -143,6 +143,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-const refreshIntervalInMinutes = 5;
+const refreshIntervalInMinutes = 0.5;
 const refreshIntervalInMilliseconds = refreshIntervalInMinutes * 60 * 1000;
 setInterval(getMessages, refreshIntervalInMilliseconds);

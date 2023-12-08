@@ -1,9 +1,9 @@
 import { getEvents } from './api.js';
 
-const datetimeToPosition = (dateTime, width) => {
+const datetimeToPosition = (dateTime) => {
   const date = new Date(dateTime);
-  const totalMinutes = (date.getHours() - 9) * 60 + date.getMinutes();
-  return (totalMinutes / (8 * 60)) * width;
+  const totalMinutes = date.getHours() * 60 + date.getMinutes();
+  return (totalMinutes / (24 * 60)) * 897; // 897 is the final width of the timeline
 };
 
 const formatTime = (dateTime, withPeriod = true) => {
@@ -18,11 +18,11 @@ const formatTime = (dateTime, withPeriod = true) => {
   return time;
 };
 
-const renderEventPill = (event, index, width, previousEndTime) => {
+const renderEventPill = (event, index, previousEndTime) => {
   const pillHeight = 8;
 
-  const startPixel = datetimeToPosition(event.start.dateTime, width);
-  const endPixel = datetimeToPosition(event.end.dateTime, width);
+  const startPixel = datetimeToPosition(event.start.dateTime);
+  const endPixel = datetimeToPosition(event.end.dateTime);
 
   const eventElement = document.createElement('div');
   eventElement.className = 'event';
@@ -61,7 +61,7 @@ const renderEventPill = (event, index, width, previousEndTime) => {
 const renderTick = (hour) => {
   const tickElement = document.createElement('div');
   tickElement.className = 'tick';
-  tickElement.style.left = `${((hour - 9) / 8) * 100}%`;
+  tickElement.style.left = `${(hour / 9) * 100}%`;
 
   if (hour % 2 !== 0) {
     const tickLabelElement = document.createElement('div');
@@ -81,7 +81,7 @@ const renderNowTick = () => {
 
   const tickElement = document.createElement('div');
   tickElement.className = 'tick now';
-  tickElement.style.left = `${(((hour - 9) * 60 + minute) / (8 * 60)) * 100}%`;
+  tickElement.style.left = `${((hour * 60 + minute) / (9 * 60)) * 100}%`;
   return tickElement;
 };
 
@@ -110,7 +110,7 @@ export const generateCalendar = async () => {
   xAxisElement.className = 'x-axis';
   timelineElement.appendChild(xAxisElement);
 
-  for (let hour = 9; hour <= 17; hour++) {
+  for (let hour = 0; hour <= 24; hour++) {
     const tickElement = renderTick(hour);
     xAxisElement.appendChild(tickElement);
   }
@@ -119,33 +119,18 @@ export const generateCalendar = async () => {
   xAxisElement.appendChild(nowTickElement);
 
   const events = await getEvents(today);
-  console.log(events);
-
-  // only render events from 9 to 5
-  const eventsToRender = events.filter((e) => {
-    const startTime = new Date(e.start.dateTime);
-    const endTime = new Date(e.end.dateTime);
-    const startHour = startTime.getHours();
-    const endHour = endTime.getHours();
-    return !(endHour < 9 || startHour > 17);
-  });
 
   // pills
-  eventsToRender.forEach((event, i) => {
+  events.forEach((event, i) => {
     const previousEndTime = events[i - 1]?.end.dateTime ?? null;
 
-    const eventElement = renderEventPill(
-      event,
-      i,
-      timelineElement.clientWidth,
-      previousEndTime
-    );
+    const eventElement = renderEventPill(event, i, previousEndTime);
 
     timelineElement.appendChild(eventElement);
   });
 
   // list
-  const futureEvents = eventsToRender.filter(
+  const futureEvents = events.filter(
     (e) => new Date(e.start.dateTime) >= today
   );
 
@@ -174,4 +159,6 @@ export const generateCalendar = async () => {
 
     eventListElement.appendChild(noEvents);
   }
+
+  timelineElement.scrollLeft = today.getHours() < 17 ? 320 : 561;
 };

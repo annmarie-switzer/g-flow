@@ -189,11 +189,12 @@ button > svg > path {
   position: relative;
   margin: 0px 24px;
   font-size: 12px;
+  overflow-x: auto;
 }
 
 .x-axis {
   position: absolute;
-  bottom: 22px;
+  bottom: 20px;
   width: 100%;
   height: 50%;
 }
@@ -206,7 +207,7 @@ button > svg > path {
   background-color: var(--grey2);
 }
 
-.tick:nth-child(even) {
+.tick:nth-child(odd) {
   background-color: var(--grey3);
 }
 
