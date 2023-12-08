@@ -130,9 +130,19 @@ export const generateCalendar = async () => {
   });
 
   // list
-  const futureEvents = events.filter(
-    (e) => new Date(e.start.dateTime) >= today
-  );
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0); // set the time to 00:00:00.000
+
+  const futureEvents = events.filter((e) => {
+    const eventStart = new Date(e.start.dateTime);
+    const eventEnd = new Date(e.end.dateTime);
+    return (
+      (eventStart >= now && eventStart < tomorrow) ||
+      (eventEnd > now && eventStart < tomorrow)
+    );
+  });
 
   futureEvents.forEach((event) => {
     const eventListItem = document.createElement('div');
