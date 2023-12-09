@@ -119,7 +119,7 @@ export const generateList = async () => {
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {
   if (!chrome.runtime.lastError && res.token) {
     generateList();
-    generateCalendar();
+    generateCalendar('today');
   } else {
     console.error('Error getting access token: ', chrome.runtime.lastError);
   }

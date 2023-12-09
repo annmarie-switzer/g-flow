@@ -1,12 +1,18 @@
 import { getEvents } from './api.js';
 
-const isEndTimeTomorrow = (endTime) => {
-  const now = new Date();
-  const end = new Date(endTime);
-  now.setHours(0, 0, 0, 0);
+const isEndTimeNextDay = (eventStart, eventEnd) => {
+  const start = new Date(eventStart.getTime());
+  const end = new Date(eventEnd.getTime());
+
+  // Set the hours, minutes, seconds, and milliseconds to 0 to compare only the date part
+  start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
-  now.setDate(now.getDate() + 1);
-  return now.getTime() === end.getTime();
+
+  // Add 1 to the date part of the start date
+  start.setDate(start.getDate() + 1);
+
+  // Compare the time part of the start and end dates
+  return start.getTime() === end.getTime();
 };
 
 const datetimeToPosition = (dateTime) => {
@@ -29,17 +35,17 @@ const formatTime = (dateTime, withPeriod = true) => {
 
 const renderEventPill = (event, index, previousEndTime) => {
   const pillHeight = 8;
+  const eventStart = new Date(event.start.dateTime);
+  const eventEnd = new Date(event.end.dateTime);
 
-  const startPixel = datetimeToPosition(event.start.dateTime);
-
-  const endDateTime = new Date(event.end.dateTime);
-
-  if (isEndTimeTomorrow(endDateTime)) {
-    endDateTime.setHours(23);
-    endDateTime.setMinutes(59);
+  // If the event is going to bleed into the next day, artificially set its end time to 11:59pm
+  if (isEndTimeNextDay(eventStart, eventEnd)) {
+    eventEnd.setHours(23);
+    eventEnd.setMinutes(59);
   }
 
-  const endPixel = datetimeToPosition(endDateTime);
+  const startPixel = datetimeToPosition(eventStart);
+  const endPixel = datetimeToPosition(eventEnd);
 
   const eventElement = document.createElement('div');
   eventElement.className = 'event';
@@ -48,14 +54,7 @@ const renderEventPill = (event, index, previousEndTime) => {
   eventElement.style.height = `${pillHeight}px`;
   eventElement.dataset.id = event.id;
 
-  if (event.status === 'tentative') {
-    eventElement.classList.add('tentative');
-  }
-
   const now = new Date();
-
-  const eventStart = new Date(event.start.dateTime);
-  const eventEnd = new Date(event.end.dateTime);
 
   if (now >= eventStart && now <= eventEnd) {
     eventElement.classList.add('now');
@@ -67,6 +66,10 @@ const renderEventPill = (event, index, previousEndTime) => {
 
   if (previousEndTime !== null && event.start.dateTime < previousEndTime) {
     eventElement.style.transform = `translateY(${pillHeight * index - 8}px)`;
+  }
+
+  if (event.status === 'tentative') {
+    eventElement.classList.add('tentative');
   }
 
   eventElement.addEventListener('click', () => {
@@ -103,26 +106,43 @@ const renderNowTick = () => {
   return tickElement;
 };
 
-const renderTodayLabel = () => {
-  const todayLabel = document.createElement('span');
-  const today = new Date();
-  todayLabel.textContent = today.toLocaleDateString(undefined, {
+const renderDateLabel = (currentDate) => {
+  const dateLabel = document.createElement('span');
+  dateLabel.id = 'date-label';
+  dateLabel.textContent = currentDate.toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'short',
     day: 'numeric'
   });
-  return todayLabel;
+  return dateLabel;
 };
 
-export const generateCalendar = async () => {
+/** @param day 'today' | 'tomorrow' */
+export const generateCalendar = async (day) => {
   const today = new Date();
+  const currentDate =
+    day === 'today' ? today : new Date(today.setDate(today.getDate() + 1));
 
+  const timelineActionsElement = document.getElementById('timeline-actions');
   const timelineElement = document.getElementById('timeline');
   const eventListElement = document.getElementById('event-list');
-  const timelineActions = document.getElementById('timeline-actions');
 
-  const todayLabel = renderTodayLabel();
-  timelineActions.appendChild(todayLabel);
+  const dateLabel = renderDateLabel(currentDate);
+  timelineActionsElement.appendChild(dateLabel);
+
+  const dateToggle = document.createElement('button');
+  dateToggle.id = 'date-toggle';
+  dateToggle.textContent = day === 'today' ? 'See Tomorrow' : 'See Today';
+
+  dateToggle.addEventListener('click', () => {
+    day = day === 'today' ? 'tomorrow' : 'today';
+    timelineActionsElement.innerHTML = '';
+    timelineElement.innerHTML = '';
+    eventListElement.innerHTML = '';
+    generateCalendar(day);
+  });
+
+  timelineActionsElement.appendChild(dateToggle);
 
   const xAxisElement = document.createElement('div');
   xAxisElement.className = 'x-axis';
@@ -133,10 +153,12 @@ export const generateCalendar = async () => {
     xAxisElement.appendChild(tickElement);
   }
 
-  const nowTickElement = renderNowTick();
-  xAxisElement.appendChild(nowTickElement);
+  if (day === 'today') {
+    const nowTickElement = renderNowTick();
+    xAxisElement.appendChild(nowTickElement);
+  }
 
-  const events = await getEvents(today);
+  const events = await getEvents(currentDate);
 
   // pills
   events.forEach((event, i) => {
@@ -146,19 +168,22 @@ export const generateCalendar = async () => {
   });
 
   // list
-  const now = new Date();
+  const now = new Date(currentDate);
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0); // set the time to 00:00:00.000
+  tomorrow.setHours(0, 0, 0, 0);
 
-  const futureEvents = events.filter((e) => {
-    const eventStart = new Date(e.start.dateTime);
-    const eventEnd = new Date(e.end.dateTime);
-    return (
-      (eventStart >= now && eventStart < tomorrow) ||
-      (eventEnd > now && eventStart < tomorrow)
-    );
-  });
+  const futureEvents =
+    day === 'today'
+      ? events.filter((e) => {
+          const eventStart = new Date(e.start.dateTime);
+          const eventEnd = new Date(e.end.dateTime);
+          return (
+            (eventStart >= now && eventStart < tomorrow) ||
+            (eventEnd > now && eventStart < tomorrow)
+          );
+        })
+      : events;
 
   futureEvents.forEach((event) => {
     const eventListItem = document.createElement('div');
@@ -172,9 +197,10 @@ export const generateCalendar = async () => {
     )}</span>
     `;
 
-    const now = new Date();
+    const now = new Date(currentDate);
     const start = new Date(event.start.dateTime);
     const end = new Date(event.end.dateTime);
+
     if (now >= start && now <= end) {
       eventListItem.classList.add('now');
     }
@@ -190,12 +216,12 @@ export const generateCalendar = async () => {
     const noEvents = document.createElement('div');
     noEvents.className = 'no-events';
     noEvents.textContent = 'No more events today';
-
     eventListElement.appendChild(noEvents);
   }
 
   // scroll the chart to 9am by default, or to the end if it's after 5pm
-  timelineElement.scrollLeft = today.getHours() < 17 ? 320 : 561;
+  timelineElement.scrollLeft =
+    day !== 'today' || today.getHours() < 17 ? 320 : 561;
 
   // Add event listeners to the event pills and list items
   document.querySelectorAll('.event, .event-list-item').forEach((element) => {

@@ -68,6 +68,19 @@ button > svg > path {
   border-bottom: solid 1.5px var(--grey4);
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--grey4);
+  border-radius: 16px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--grey3);
+}
+
 #popup-container {
   display: flex;
   flex-direction: column;
@@ -84,19 +97,6 @@ button > svg > path {
   flex-direction: column;
   height: 350px;
   overflow-y: auto;
-}
-
-#list-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-#list-container::-webkit-scrollbar-thumb {
-  background-color: var(--grey4);
-  border-radius: 16px;
-}
-
-#list-container::-webkit-scrollbar-thumb:hover {
-  background: var(--grey3);
 }
 
 .list-item {
