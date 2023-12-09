@@ -86,6 +86,19 @@ button > svg > path {
   overflow-y: auto;
 }
 
+#list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+#list-container::-webkit-scrollbar-thumb {
+  background-color: var(--grey4);
+  border-radius: 16px;
+}
+
+#list-container::-webkit-scrollbar-thumb:hover {
+  background: var(--grey3);
+}
+
 .list-item {
   display: flex;
   gap: 8px;
