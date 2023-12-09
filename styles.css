@@ -25,7 +25,7 @@ body {
   font-family: 'Fira Sans Condensed', sans-serif;
   font-size: 14px;
   position: relative;
-  background-color: var(--grey8);
+  background-color: var(--grey7);
   color: var(--grey2);
 }
 
@@ -59,7 +59,7 @@ button > svg > path {
 .action-row {
   position: sticky;
   top: 0;
-  background-color: var(--grey8);
+  background-color: var(--grey7);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -74,6 +74,10 @@ button > svg > path {
   position: relative;
 }
 
+#popup-container .action-row {
+  margin-bottom: 8px;
+}
+
 /* LIST */
 #list-container {
   display: flex;
@@ -84,14 +88,13 @@ button > svg > path {
 
 .list-item {
   display: flex;
-  padding: 8px;
   gap: 8px;
+  align-items: center;
+  margin: 0 16px;
+  padding: 8px 8px 8px 4px;
+  box-sizing: border-box;
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
-}
-
-.list-item:hover {
-  color: var(--grey0);
 }
 
 .btn-container {
@@ -99,43 +102,28 @@ button > svg > path {
   align-items: center;
 }
 
-.btn-container > button {
-  visibility: hidden;
-}
-
-.list-item:hover > .btn-container > button {
-  visibility: visible;
+.btn-container button > svg > path {
+  fill: var(--grey3);
 }
 
 .data {
-  flex: 1;
+  width: 274px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.first-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .subject {
-  width: 275px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .received {
+  margin-left: auto;
   flex-shrink: 0;
   font-size: 12px;
   color: var(--grey3);
-  margin-right: 16px;
-}
-
-.list-item:hover .received {
-  color: var(--grey0);
 }
 
 .sender {
@@ -146,8 +134,31 @@ button > svg > path {
   text-overflow: ellipsis;
 }
 
+.list-item:hover {
+  color: var(--grey8);
+  background-color: var(--blue);
+  border-radius: 8px;
+}
+
+.list-item:hover button {
+  visibility: visible;
+}
+
+.list-item:hover button > svg > path {
+  fill: var(--grey8);
+}
+
+.list-item:hover button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.list-item:hover button:active {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.list-item:hover .received,
 .list-item:hover .sender {
-  color: var(--grey0);
+  color: var(--grey8);
 }
 
 .no-messages {
@@ -285,6 +296,7 @@ button > svg > path {
 .event-list-item {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   align-items: center;
   padding: 4px 8px;
   margin: 0 16px;
@@ -293,8 +305,22 @@ button > svg > path {
   border-bottom: solid 0.5px var(--grey4);
 }
 
+.event-list-item > span:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.event-list-item > span:last-child {
+  flex-shrink: 0;
+}
+
 .event-list-item:last-child {
   border-bottom: none;
+}
+
+.event-list-item.now {
+  color: var(--green);
 }
 
 .event-list-item:hover,
@@ -304,13 +330,8 @@ button > svg > path {
   border-radius: 8px;
 }
 
-.event-list-item.now {
-  color: var(--green);
-}
-
 .event-list-item.now:hover,
 .event-list-item.now.hover {
-  color: var(--grey8);
   background-color: var(--green);
 }
 

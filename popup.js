@@ -58,13 +58,12 @@ const generateListItem = (messageData) => {
 
   listItem.insertAdjacentHTML(
     'beforeend',
-    `<div class="data">
-    <div class="first-row">
-      <div class="subject">${subject}</div>
+    `
+      <div class="data">
+        <div class="subject">${subject}</div>
+        <div class="sender">${sender}</div>
+      </div>
       <div class="received">${formatReceived(received)}</div>
-    </div>
-    <div class="sender">${sender}</div>
-  </div>
   `
   );
 
