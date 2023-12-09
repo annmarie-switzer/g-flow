@@ -1,6 +1,6 @@
 :root {
   --blue: #45a9f9;
-  --dark-blue: #3076ae;
+  --dark-blue: #45a9f966;
   --green: #00e676;
   --dark-green: #00a153;
   --orange: #ffa500;
@@ -189,7 +189,20 @@ button > svg > path {
   position: relative;
   margin: 0px 24px;
   font-size: 12px;
-  overflow-x: auto;
+  overflow-x: scroll;
+}
+
+#timeline::-webkit-scrollbar {
+  height: 3px;
+}
+
+#timeline::-webkit-scrollbar-thumb {
+  background-color: var(--grey7);
+  border-radius: 16px;
+}
+
+#timeline::-webkit-scrollbar-thumb:hover {
+  background: var(--blue);
 }
 
 .x-axis {
@@ -212,7 +225,7 @@ button > svg > path {
 }
 
 .tick.now {
-  width: 2px;
+  width: 3px;
   background-color: var(--dark-green);
   border-radius: 16px;
 }
