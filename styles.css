@@ -175,14 +175,6 @@ button > svg > path {
   fill: var(--grey2);
 }
 
-.list-item:hover button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.list-item:hover button:active {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
 .no-messages {
   color: var(--grey3);
   margin: 12px auto;
@@ -365,4 +357,6 @@ button > svg > path {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  padding: 8px;
+  box-sizing: border-box;
 }
