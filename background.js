@@ -27,11 +27,18 @@ const formatBody = (data) => {
 
   if (endcodedBody) {
     try {
-      const base64 = endcodedBody.replace(/-/g, '+').replace(/_/g, '/');
+      let base64 = endcodedBody.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4) {
         base64 += '=';
       }
-      bodyHtml = atob(base64);
+      const rawData = atob(base64);
+      const encoding = 'utf-8';
+      const decoder = new TextDecoder(encoding);
+      const uint8Array = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; i++) {
+        uint8Array[i] = rawData.charCodeAt(i);
+      }
+      bodyHtml = decoder.decode(uint8Array);
     } catch (e) {
       console.log(`Parse failed for: ${endcodedBody}. Error: ${e}`);
     }
