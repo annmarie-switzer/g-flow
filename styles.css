@@ -68,8 +68,14 @@ button > svg > path {
   border-bottom: solid 1.5px var(--grey4);
 }
 
+#popup-container .action-row > *:first-child,
+#message-container .action-row > *:first-child {
+  margin-right: auto;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -79,6 +85,18 @@ button > svg > path {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--grey3);
+}
+
+#timeline::-webkit-scrollbar {
+  height: 3px;
+}
+
+#timeline::-webkit-scrollbar-thumb {
+  background-color: var(--grey7);
+}
+
+#timeline::-webkit-scrollbar-thumb:hover {
+  background: var(--grey4);
 }
 
 #popup-container {
@@ -205,19 +223,6 @@ button > svg > path {
   margin: 0px 24px;
   font-size: 12px;
   overflow-x: scroll;
-}
-
-#timeline::-webkit-scrollbar {
-  height: 3px;
-}
-
-#timeline::-webkit-scrollbar-thumb {
-  background-color: var(--grey7);
-  border-radius: 16px;
-}
-
-#timeline::-webkit-scrollbar-thumb:hover {
-  background: var(--grey4);
 }
 
 .x-axis {
@@ -360,8 +365,4 @@ button > svg > path {
   display: flex;
   flex-direction: column;
   overflow: auto;
-}
-
-#message-container .action-row > *:first-child {
-  margin-right: auto;
 }

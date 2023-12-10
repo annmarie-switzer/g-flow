@@ -119,13 +119,17 @@ const renderDateLabel = (currentDate) => {
 
 /** @param day 'today' | 'tomorrow' */
 export const generateCalendar = async (day) => {
-  const today = new Date();
-  const currentDate =
-    day === 'today' ? today : new Date(today.setDate(today.getDate() + 1));
-
   const timelineActionsElement = document.getElementById('timeline-actions');
   const timelineElement = document.getElementById('timeline');
   const eventListElement = document.getElementById('event-list');
+
+  timelineActionsElement.innerHTML = '';
+  timelineElement.innerHTML = '';
+  eventListElement.innerHTML = '';
+
+  const today = new Date();
+  const currentDate =
+    day === 'today' ? today : new Date(today.setDate(today.getDate() + 1));
 
   const dateLabel = renderDateLabel(currentDate);
   timelineActionsElement.appendChild(dateLabel);
@@ -136,9 +140,6 @@ export const generateCalendar = async (day) => {
 
   dateToggle.addEventListener('click', () => {
     day = day === 'today' ? 'tomorrow' : 'today';
-    timelineActionsElement.innerHTML = '';
-    timelineElement.innerHTML = '';
-    eventListElement.innerHTML = '';
     generateCalendar(day);
   });
 

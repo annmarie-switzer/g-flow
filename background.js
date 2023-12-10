@@ -66,7 +66,7 @@ const getMessageDetails = async (messageId) => {
   };
 };
 
-const getMessages = async () => {
+export const getMessages = async () => {
   try {
     const data = await getUnread(TOKEN);
     const allUnread = data.messages;

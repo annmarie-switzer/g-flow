@@ -1,6 +1,7 @@
 import { getEmail, markRead, moveToTrash } from './api.js';
 import { generateMessage } from './message.js';
 import { generateCalendar } from './calendar.js';
+import { getMessages } from './background.js';
 
 const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');
@@ -70,6 +71,41 @@ const generateListItem = (messageData) => {
   return listItem;
 };
 
+const renderRefreshButton = async () => {
+  const refreshButton = document.createElement('button');
+
+  const response = await fetch('img/refresh.svg');
+  const svgContent = await response.text();
+
+  refreshButton.innerHTML = svgContent;
+  refreshButton.title = 'Refresh';
+
+  refreshButton.addEventListener('click', () => {
+    getMessages().then(() => {
+      generateList();
+      generateCalendar('today');
+    });
+  });
+
+  return refreshButton;
+};
+
+const renderEmailButton = async () => {
+  const email = await getEmail();
+  const emailButton = document.createElement('button');
+
+  const response = await fetch('img/forward-to-inbox.svg');
+  const svgContent = await response.text();
+  emailButton.innerHTML = `${svgContent}<span>${email}</span>`;
+  emailButton.title = 'Go to your inbox';
+
+  emailButton.addEventListener('click', () => {
+    window.open('https://mail.google.com/', '_blank');
+  });
+
+  return emailButton;
+};
+
 export const generateList = async () => {
   popupContainer.style.display = 'flex';
   messageContainer.style.display = 'none';
@@ -80,19 +116,10 @@ export const generateList = async () => {
   const row = document.createElement('div');
   row.className = 'action-row';
 
-  const email = await getEmail();
-  const emailButton = document.createElement('button');
+  const refreshButton = await renderRefreshButton();
+  row.appendChild(refreshButton);
 
-  const response = await fetch('img/forward-to-inbox.svg');
-  const svgContent = await response.text();
-  emailButton.innerHTML = `${svgContent}<span>${email}</span>`;
-
-  emailButton.addEventListener('click', () => {
-    window.open('https://mail.google.com/', '_blank');
-  });
-
-  emailButton.title = 'Go to your inbox';
-
+  const emailButton = await renderEmailButton();
   row.appendChild(emailButton);
 
   listContainer.innerHTML = '';
