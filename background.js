@@ -108,6 +108,8 @@ export const getMessages = async () => {
     if (unreadMessages.length > 0) {
       chrome.action.setBadgeText({ text: String(unreadMessages.length) });
       chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+    } else {
+      chrome.action.setBadgeText({ text: '' });
     }
 
     return unreadMessages;

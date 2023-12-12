@@ -16,10 +16,6 @@
   --grey8: #2a2c2d;
 }
 
-html {
-  width: 400px !important;
-}
-
 body {
   margin: 0;
   font-family: 'Fira Sans Condensed', sans-serif;
