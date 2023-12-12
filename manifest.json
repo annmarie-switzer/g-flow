@@ -3,9 +3,15 @@
   "name": "G Flow",
   "description": "Keep the day flowing without breaking your flow",
   "version": "1.0",
+  "icons": {
+    "16": "img/icon16.png",
+    "32": "img/icon32.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "img/icon.png"
+    "default_icon": "img/icon32.png"
   },
   "oauth2": {
     "client_id": "1020857444789-nnv7gph0vvb3c2e9he1u7tii0c55gkfn.apps.googleusercontent.com",

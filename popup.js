@@ -125,7 +125,7 @@ export const generateList = async () => {
   listContainer.innerHTML = '';
   listContainer.appendChild(row);
 
-  if (messages) {
+  if (messages.length) {
     const listItems = messages.map(generateListItem);
     listContainer.append(...listItems);
   } else {

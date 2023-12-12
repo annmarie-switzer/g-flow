@@ -76,11 +76,7 @@ const getMessageDetails = async (messageId) => {
 export const getMessages = async () => {
   try {
     const data = await getUnread(TOKEN);
-    const allUnread = data.messages;
-
-    if (!allUnread || allUnread.length === 0) {
-      return;
-    }
+    const allUnread = data.messages ?? [];
 
     const requests = allUnread.map((message) => getMessageDetails(message.id));
 
@@ -108,8 +104,11 @@ export const getMessages = async () => {
     }, []);
 
     await chrome.storage.session.set({ unreadMessages });
-    chrome.action.setBadgeText({ text: String(unreadMessages.length) });
-    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+
+    if (unreadMessages.length > 0) {
+      chrome.action.setBadgeText({ text: String(unreadMessages.length) });
+      chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+    }
 
     return unreadMessages;
   } catch (error) {
