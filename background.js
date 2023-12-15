@@ -126,7 +126,7 @@ chrome.identity.getAuthToken({ interactive: false }, (token) => {
   } else {
     console.log('User is unauthenticated');
     chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: '#808080' });
+    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
   }
 });
 

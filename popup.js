@@ -7,6 +7,12 @@ const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
 
+const trashIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>';
+
+const spinnerIcon =
+  '<svg class="spinner" viewBox="0 0 50 50" height="18" width="18"><circle cx="25" cy="25" r="20"></circle></svg>';
+
 const formatReceived = (received) => {
   const date = new Date(parseInt(received));
   const today = new Date();
@@ -44,12 +50,13 @@ const generateListItem = (messageData) => {
 
   const btn = document.createElement('button');
   btn.title = 'Move to trash';
-  btn.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>';
+  btn.innerHTML = trashIcon;
 
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', async (e) => {
     e.stopPropagation();
-    moveToTrash(id).then(generateList);
+    btn.innerHTML = spinnerIcon;
+    await moveToTrash(id);
+    generateList();
   });
 
   const btnContainer = document.createElement('div');

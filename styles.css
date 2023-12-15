@@ -64,6 +64,41 @@ button > svg > path {
   border-bottom: solid 1.5px var(--grey4);
 }
 
+.spinner {
+  animation: rotate 2s linear infinite;
+}
+
+.spinner circle {
+  stroke: var(--grey3);
+  stroke-linecap: round;
+  stroke-dasharray: 80, 200;
+  stroke-dashoffset: 0;
+  stroke-width: 4px;
+  fill: none;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
 #popup-container .action-row > *:first-child,
 #message-container .action-row > *:first-child {
   margin-right: auto;
