@@ -64,7 +64,6 @@ a:hover {
   border-radius: 8px;
 }
 
-.content > *:last-child {
+.content > p:last-of-type {
   color: var(--orange);
-  text-align: center;
 }
