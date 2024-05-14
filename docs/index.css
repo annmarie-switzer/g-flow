@@ -1,7 +1,22 @@
-@import url('../root.css');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed&display=swap');
+
+:root {
+  --blue: #45a9f9;
+  --orange: #ffa500;
+  --grey2: #bbbbbb;
+  --grey7: #31353a;
+  --grey8: #2a2c2d;
+
+  --gradient: linear-gradient(315deg, #00e676 0%, #1fcbb1 30.86%, #45a9f9 100%);
+}
 
 body {
+  margin: 0;
+  font-family: 'Fira Sans Condensed', sans-serif;
   font-size: 1rem;
+  position: relative;
+  background-color: var(--grey7);
+  color: var(--grey2);
   padding: 16px;
 }
 
