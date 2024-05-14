@@ -416,12 +416,29 @@ button > svg > path {
   flex-direction: column;
 }
 
-.message-body {
+.message-body-container {
   flex: auto;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  gap: 8px;
   padding: 8px;
+  overflow: auto;
   box-sizing: border-box;
-  background-color: #fff;
+}
+
+.message-body-container .metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--grey5);
+  border-radius: 8px;
+}
+
+.message-body-container .metadata .subject {
+  font-size: 18px;
+}
+
+.message-body-container .metadata .sender {
+  font-size: 14px;
 }

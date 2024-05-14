@@ -42,7 +42,7 @@ const actionButtonRow = (messageId) => {
   row.appendChild(
     actionButton({
       icon: 'mark-unread',
-      action: () => markUnread(messageId),
+      action: () => markUnread(messageId).then(generateList),
       title: 'Mark unread'
     })
   );
@@ -51,19 +51,22 @@ const actionButtonRow = (messageId) => {
 };
 
 export const generateMessage = (messageData) => {
-  const { id, received, sender, subject, body } = messageData;
+  const { id, received, sender, snippet, subject, body } = messageData;
 
   const messageContainer = document.getElementById('message-container');
 
   messageContainer.appendChild(actionButtonRow(id));
 
-  const messageBody = document.createElement('div');
-  messageBody.className = 'message-body';
-  messageBody.innerHTML = `
-    <div class="sender">${sender}</div>
-    <div class="subject">${subject}</div>
-    <div>${body}</div>
+  const messageBodyContainer = document.createElement('div');
+  messageBodyContainer.className = 'message-body-container';
+  messageBodyContainer.innerHTML = `
+    <div class="metadata">
+      <span class="subject">${subject}</span>
+      <span class="sender">${sender}</span>
+    </div>
+    
+    <div class="message-body">${body}</div>
   `;
 
-  messageContainer.appendChild(messageBody);
+  messageContainer.appendChild(messageBodyContainer);
 };
