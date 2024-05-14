@@ -150,8 +150,9 @@ export const generateList = async () => {
   popupContainer.style.display = 'flex';
 };
 
+// When the extension is clicked, fetch the auth token and generate the markup
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {
-  if (!chrome.runtime.lastError && res.token) {
+  if (res.token && !chrome.runtime.lastError) {
     generateList();
     generateCalendar('today');
   } else {
