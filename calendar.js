@@ -33,15 +33,66 @@ const formatTime = (dateTime, withPeriod = true) => {
   return time;
 };
 
-const renderEventPill = (event, index, previousEndTime) => {
-  const pillHeight = 8;
-  const eventStart = new Date(event.start.dateTime);
-  const eventEnd = new Date(event.end.dateTime);
+const isTentative = (event) => {
+  const STATUSES = ['needsAction', 'tentative'];
 
-  // If the event is going to bleed into the next day, artificially set its end time to 11:59pm
-  if (isEndTimeNextDay(eventStart, eventEnd)) {
-    eventEnd.setHours(23);
-    eventEnd.setMinutes(59);
+  const { attendees, creator, status } = event;
+  const eventTentative = STATUSES.includes(status);
+
+  if (!attendees) return eventTentative;
+
+  const { responseStatus } = attendees.find((attendee) => attendee.self);
+  const isCreator = creator.self;
+  const userTentative = !isCreator && STATUSES.includes(responseStatus);
+
+  return userTentative || eventTentative;
+};
+
+const allDeclined = (attendees) => {
+  if (!attendees) return false;
+
+  const numDeclined = attendees.filter(
+    (attendee) => attendee.responseStatus === 'declined'
+  ).length;
+
+  return numDeclined >= attendees.length - 1;
+};
+
+const userDeclined = (event) => {
+  const { attendees, creator } = event;
+
+  if (!attendees) return false;
+
+  const { responseStatus } = attendees.find((attendee) => attendee.self);
+  const isCreator = creator.self;
+
+  return !isCreator && responseStatus === 'declined';
+};
+
+const renderEventPill = (event, previousEndTime) => {
+  const pillHeight = 8;
+
+  let eventStart;
+  let eventEnd;
+
+  const isAllDay =
+    event.start.date &&
+    event.end.date &&
+    !event.start.dateTime &&
+    !event.end.dateTime;
+
+  if (isAllDay) {
+    eventStart = new Date().setHours(0, 0, 0, 0);
+    eventEnd = new Date().setHours(23, 59, 0, 0);
+  } else {
+    eventStart = new Date(event.start.dateTime);
+    eventEnd = new Date(event.end.dateTime);
+
+    // If event is going to bleed into the next day, artificially set end time to 11:59pm
+    if (isEndTimeNextDay(eventStart, eventEnd)) {
+      eventEnd.setHours(23);
+      eventEnd.setMinutes(59);
+    }
   }
 
   const startPixel = datetimeToPosition(eventStart);
@@ -64,12 +115,19 @@ const renderEventPill = (event, index, previousEndTime) => {
     eventElement.classList.add('past');
   }
 
-  if (previousEndTime !== null && event.start.dateTime < previousEndTime) {
-    eventElement.style.transform = `translateY(${pillHeight * index - 8}px)`;
+  if (isAllDay) {
+    eventElement.classList.remove('now');
+    eventElement.classList.add('all-day');
+    eventElement.style.height = `${pillHeight / 2}px`;
+    eventElement.style.bottom = `${pillHeight}`;
   }
 
-  if (event.status === 'tentative') {
+  if (isTentative(event) || allDeclined(event.attendees)) {
     eventElement.classList.add('tentative');
+  }
+
+  if (previousEndTime !== null && event.start.dateTime < previousEndTime) {
+    eventElement.style.transform = `translateY(${pillHeight}px)`;
   }
 
   eventElement.addEventListener('click', () => {
@@ -159,12 +217,13 @@ export const generateCalendar = async (day) => {
     xAxisElement.appendChild(nowTickElement);
   }
 
-  const events = await getEvents(currentDate);
+  const allEvents = await getEvents(currentDate);
+  const events = allEvents.filter((event) => !userDeclined(event));
 
   // pills
   events.forEach((event, i) => {
     const previousEndTime = events[i - 1]?.end.dateTime ?? null;
-    const eventElement = renderEventPill(event, i, previousEndTime);
+    const eventElement = renderEventPill(event, previousEndTime);
     timelineElement.appendChild(eventElement);
   });
 
@@ -174,36 +233,55 @@ export const generateCalendar = async (day) => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
 
-  const futureEvents =
-    day === 'today'
-      ? events.filter((e) => {
-          const eventStart = new Date(e.start.dateTime);
-          const eventEnd = new Date(e.end.dateTime);
-          return (
-            (eventStart >= now && eventStart < tomorrow) ||
-            (eventEnd > now && eventStart < tomorrow)
-          );
-        })
-      : events;
+  const listEvents = events
+    .map((e) => {
+      const isFutureEvent = (() => {
+        const eventStart = new Date(e.start.dateTime);
+        const eventEnd = new Date(e.end.dateTime);
+        return (
+          (eventStart >= now && eventStart < tomorrow) ||
+          (eventEnd > now && eventStart < tomorrow)
+        );
+      })();
 
-  futureEvents.forEach((event) => {
+      const isAllDayEvent = !!(
+        e.start.date &&
+        e.end.date &&
+        !e.start.dateTime &&
+        !e.end.dateTime
+      );
+
+      return { ...e, isFutureEvent, isAllDayEvent };
+    })
+    .filter((e) => e.isFutureEvent || e.isAllDayEvent);
+
+  listEvents.forEach((event) => {
     const eventListItem = document.createElement('div');
     eventListItem.className = 'event-list-item';
     eventListItem.title = 'Open in Google Calendar';
     eventListItem.dataset.id = event.id;
-    eventListItem.innerHTML = `
-      <span>${event.summary}</span>
-      <span>${formatTime(event.start.dateTime, false)} - ${formatTime(
-      event.end.dateTime
-    )}</span>
-    `;
 
-    const now = new Date(currentDate);
-    const start = new Date(event.start.dateTime);
-    const end = new Date(event.end.dateTime);
+    if (event.isAllDayEvent) {
+      eventListItem.classList.add('all-day');
+      eventListItem.innerHTML = `
+        <span>${event.summary}</span>
+        <span>All day</span>
+      `;
+    } else {
+      eventListItem.innerHTML = `
+        <span>${event.summary}</span>
+        <span>${formatTime(event.start.dateTime, false)} - ${formatTime(
+        event.end.dateTime
+      )}</span>
+      `;
 
-    if (now >= start && now <= end) {
-      eventListItem.classList.add('now');
+      const now = new Date(currentDate);
+      const start = new Date(event.start.dateTime);
+      const end = new Date(event.end.dateTime);
+
+      if (now >= start && now <= end) {
+        eventListItem.classList.add('now');
+      }
     }
 
     eventListItem.addEventListener('click', () => {
@@ -213,7 +291,7 @@ export const generateCalendar = async (day) => {
     eventListElement.appendChild(eventListItem);
   });
 
-  if (futureEvents.length === 0) {
+  if (listEvents.length === 0) {
     const noEvents = document.createElement('div');
     noEvents.className = 'no-events';
     noEvents.textContent = 'No more events today';
@@ -226,8 +304,9 @@ export const generateCalendar = async (day) => {
 
   // Add event listeners to the event pills and list items
   document.querySelectorAll('.event, .event-list-item').forEach((element) => {
+    const { id } = element.dataset;
+
     element.addEventListener('mouseover', () => {
-      const id = element.dataset.id;
       document.querySelectorAll(`[data-id="${id}"]`).forEach((el) => {
         el.classList.add('hover');
       });

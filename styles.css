@@ -119,7 +119,7 @@ button > svg > path {
 #list-container {
   display: flex;
   flex-direction: column;
-  height: 350px;
+  height: 300px;
   overflow-y: auto;
 }
 
@@ -187,7 +187,7 @@ button > svg > path {
 
 /* EVENTS */
 #events-container {
-  height: 200px;
+  height: 250px;
   display: flex;
   flex-direction: column;
   background-color: var(--grey5);
@@ -263,8 +263,8 @@ button > svg > path {
   cursor: pointer;
 }
 
-.event:not(.past):hover,
-.event:not(.past).hover {
+.event:hover,
+.event.hover {
   outline-style: solid;
   outline-width: 1.5px;
   outline-offset: 2px;
@@ -282,7 +282,11 @@ button > svg > path {
 
 .event.past {
   background-color: var(--dark-blue);
-  cursor: default;
+}
+
+.event.past:hover,
+.event.past.hover {
+  outline-color: var(--dark-blue);
 }
 
 .event.tentative {
@@ -292,6 +296,22 @@ button > svg > path {
 
 .event.tentative.now {
   box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.event.tentative.past {
+  box-shadow: inset 0 0 0 1px var(--dark-blue);
+}
+
+.event.all-day {
+  background-color: var(--light-purple);
+  top: unset;
+}
+
+.event.all-day:hover,
+.event.all-day.hover {
+  outline-color: var(--light-purple);
+  outline-width: 1px;
+  outline-offset: 1.5px;
 }
 
 #event-list {
@@ -329,6 +349,10 @@ button > svg > path {
   color: var(--green);
 }
 
+.event-list-item.all-day {
+  color: var(--light-purple);
+}
+
 .event-list-item:hover,
 .event-list-item.hover {
   color: var(--grey8);
@@ -339,6 +363,11 @@ button > svg > path {
 .event-list-item.now:hover,
 .event-list-item.now.hover {
   background-color: var(--green);
+}
+
+.event-list-item.all-day:hover,
+.event-list-item.all-day.hover {
+  background-color: var(--light-purple);
 }
 
 .no-events {

@@ -2,6 +2,8 @@ import { getMessage, getUnread } from './api.js';
 
 let TOKEN;
 
+const badgeColor = '#ffa500';  // var(--orange)
+
 const formatSender = (senderValue) => {
   let sender = senderValue;
 
@@ -106,8 +108,11 @@ export const getMessages = async () => {
     await chrome.storage.session.set({ unreadMessages });
 
     if (unreadMessages.length > 0) {
-      chrome.action.setBadgeText({ text: String(unreadMessages.length) });
-      chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+      const text =
+        unreadMessages.length > 99 ? '99+' : String(unreadMessages.length);
+
+      chrome.action.setBadgeText({ text });
+      chrome.action.setBadgeBackgroundColor({ color: badgeColor });
     } else {
       chrome.action.setBadgeText({ text: '' });
     }
@@ -115,6 +120,8 @@ export const getMessages = async () => {
     return unreadMessages;
   } catch (error) {
     console.error('Error getting messages: ', error);
+    chrome.action.setBadgeText({ text: '!' });
+    chrome.action.setBadgeBackgroundColor({ color: badgeColor });
   }
 };
 
@@ -124,9 +131,9 @@ chrome.identity.getAuthToken({ interactive: false }, (token) => {
     TOKEN = token;
     getMessages();
   } else {
-    console.log('User is unauthenticated');
+    console.error('User is unauthenticated');
     chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: '#ffa500' });
+    chrome.action.setBadgeBackgroundColor({ color: badgeColor });
   }
 });
 
