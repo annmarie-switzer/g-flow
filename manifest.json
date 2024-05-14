@@ -10,7 +10,7 @@
     "128": "img/icon128.png"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/popup.html",
     "default_icon": "img/icon32.png"
   },
   "oauth2": {
@@ -23,7 +23,7 @@
   },
   "permissions": ["identity", "storage"],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "src/background.js",
     "type": "module"
   }
 }

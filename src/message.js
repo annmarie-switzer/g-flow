@@ -4,7 +4,7 @@ import { generateList } from './popup.js';
 const actionButton = (details) => {
   const btn = document.createElement('button');
 
-  fetch(`img/${details.icon}.svg`)
+  fetch(`icons/${details.icon}.svg`)
     .then((response) => response.text())
     .then((svgContent) => {
       btn.innerHTML = svgContent;

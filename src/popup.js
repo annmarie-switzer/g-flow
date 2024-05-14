@@ -1,7 +1,7 @@
 import { getEmail, markRead, moveToTrash } from './api.js';
-import { generateMessage } from './message.js';
-import { generateCalendar } from './calendar.js';
 import { getMessages } from './background.js';
+import { generateCalendar } from './calendar.js';
+import { generateMessage } from './message.js';
 
 const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');
@@ -81,7 +81,7 @@ const generateListItem = (messageData) => {
 const renderRefreshButton = async () => {
   const refreshButton = document.createElement('button');
 
-  const response = await fetch('img/refresh.svg');
+  const response = await fetch('icons/refresh.svg');
   const svgContent = await response.text();
 
   refreshButton.innerHTML = svgContent;
@@ -101,7 +101,7 @@ const renderEmailButton = async () => {
   const email = await getEmail();
   const emailButton = document.createElement('button');
 
-  const response = await fetch('img/forward-to-inbox.svg');
+  const response = await fetch('icons/forward-to-inbox.svg');
   const svgContent = await response.text();
   emailButton.innerHTML = `${svgContent}<span>${email}</span>`;
   emailButton.title = 'Go to your inbox';

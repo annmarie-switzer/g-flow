@@ -2,7 +2,7 @@ import { getMessage, getUnread } from './api.js';
 
 let TOKEN;
 
-const badgeColor = '#ffa500';  // var(--orange)
+const badgeColor = '#ffa500'; // var(--orange)
 
 const formatSender = (senderValue) => {
   let sender = senderValue;
