@@ -59,22 +59,17 @@ export const getEmail = async () => {
   return emailAddress;
 };
 
-export const markRead = async (id) => {
+/** @param action 'read' | 'unread' */
+export const markAs = async (id, action) => {
   const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
 
-  const body = JSON.stringify({
-    removeLabelIds: ['UNREAD']
-  });
-
-  await soFetch(apiUrl, { method: 'POST', body });
-  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-};
-
-export const markUnread = async (id) => {
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
+  const actions = {
+    read: 'removeLabelIds',
+    unread: 'addLabelIds'
+  };
 
   const body = JSON.stringify({
-    addLabelIds: ['UNREAD']
+    [actions[action]]: ['UNREAD']
   });
 
   await soFetch(apiUrl, { method: 'POST', body });

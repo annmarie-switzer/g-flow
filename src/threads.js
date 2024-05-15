@@ -1,4 +1,4 @@
-import { getEmail, markRead, moveToTrash } from './api.js';
+import { getEmail, markAs, moveToTrash } from './api.js';
 import { getMessages } from './background.js';
 import { generateCalendar } from './calendar.js';
 import { formatReceived } from './formatters.js';
@@ -19,8 +19,7 @@ const onListItemClick = (message) => {
 
   popupContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
-
-  markRead(message.id);
+  markAs(message.id, 'read');
 };
 
 const generateListItem = (messageData) => {

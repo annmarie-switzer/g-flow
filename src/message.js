@@ -1,4 +1,4 @@
-import { markUnread, moveToTrash } from './api.js';
+import { markAs, moveToTrash } from './api.js';
 import { generateList } from './threads.js';
 
 const actionButton = (details) => {
@@ -42,7 +42,7 @@ const actionButtonRow = (messageId) => {
   row.appendChild(
     actionButton({
       icon: 'mark-unread',
-      action: () => markUnread(messageId).then(generateList),
+      action: () => markAs(messageId, 'unread').then(generateList),
       title: 'Mark unread'
     })
   );
