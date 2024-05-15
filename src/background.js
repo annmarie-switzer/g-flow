@@ -1,71 +1,49 @@
-import { getMessage, getUnread } from './api.js';
-import { formatBody, formatSender } from './formatters.js';
+import { formatMessage } from './format-message.js';
 
 let TOKEN;
 
 const badgeColor = '#ffa500'; // var(--orange)
 
-const getMessageDetails = async (messageId) => {
-  const messageDetails = await getMessage(messageId, TOKEN);
+const getThreads = async () => {
+  const headers = new Headers({
+    Authorization: `Bearer ${TOKEN}`
+  });
 
-  const senderValue = messageDetails.payload.headers.find((header) =>
-    /from/i.test(header.name)
-  ).value;
+  const apiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/threads';
 
-  const sender = formatSender(senderValue);
+  const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
+  const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
 
-  const subject = messageDetails.payload.headers.find((header) =>
-    /subject/i.test(header.name)
-  ).value;
+  const response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+  const data = await response.json();
 
-  const body = formatBody(messageDetails.payload);
+  const threadReqs = data.threads.map(async (thread) => {
+    const response = await fetch(`${apiUrl}/${thread.id}`, {
+      method: 'GET',
+      headers
+    });
+    return response.json();
+  });
 
-  return {
-    id: messageDetails.id,
-    threadId: messageDetails.threadId,
-    sender,
-    subject,
-    snippet: messageDetails.snippet,
-    body,
-    internalDate: messageDetails.internalDate
-  };
+  const threads = await Promise.all(threadReqs);
+
+  return threads;
 };
 
-export const getMessages = async () => {
+export const getUnreadThreads = async () => {
   try {
-    const data = await getUnread(TOKEN);
-    const allUnread = data.messages ?? [];
+    const threads = await getThreads();
 
-    const requests = allUnread.map((message) => getMessageDetails(message.id));
+    const unreadThreads = threads.map((thread) => {
+      const formattedMessages = thread.messages.map(formatMessage);
+      return { ...thread, messages: formattedMessages };
+    });
 
-    const messages = await Promise.all(requests);
+    await chrome.storage.session.set({ unreadThreads });
 
-    const sorted = messages.sort((a, b) => b.internalDate - a.internalDate);
-
-    const uniqueThreadIds = new Set();
-
-    const unreadMessages = sorted.reduce((acc, message) => {
-      if (!uniqueThreadIds.has(message.threadId)) {
-        uniqueThreadIds.add(message.threadId);
-
-        acc.push({
-          id: message.id,
-          sender: message.sender,
-          subject: message.subject,
-          snippet: message.snippet,
-          body: message.body,
-          received: message.internalDate
-        });
-      }
-
-      return acc;
-    }, []);
-
-    await chrome.storage.session.set({ unreadMessages });
-
-    if (unreadMessages.length > 0) {
+    if (unreadThreads.length > 0) {
       const text =
-        unreadMessages.length > 99 ? '99+' : String(unreadMessages.length);
+        unreadThreads.length > 99 ? '99+' : String(unreadThreads.length);
 
       chrome.action.setBadgeText({ text });
       chrome.action.setBadgeBackgroundColor({ color: badgeColor });
@@ -73,9 +51,9 @@ export const getMessages = async () => {
       chrome.action.setBadgeText({ text: '' });
     }
 
-    return unreadMessages;
+    return unreadThreads;
   } catch (error) {
-    console.error('Error getting messages: ', error);
+    console.error('Error getting threads: ', error);
     chrome.action.setBadgeText({ text: '!' });
     chrome.action.setBadgeBackgroundColor({ color: badgeColor });
   }
@@ -85,7 +63,7 @@ export const getMessages = async () => {
 chrome.identity.getAuthToken({ interactive: false }, (token) => {
   if (token && !chrome.runtime.lastError) {
     TOKEN = token;
-    getMessages();
+    getUnreadThreads();
   } else {
     console.error('User is unauthenticated: ', chrome.runtime.lastError);
     chrome.action.setBadgeText({ text: '!' });
@@ -102,12 +80,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           sendResponse({ token });
         } else {
           TOKEN = token;
-          getMessages().then(() => sendResponse({ token }));
+          getUnreadThreads().then(() => sendResponse({ token }));
         }
       });
       return true;
-    case 'fetchUnreadMessages':
-      getMessages().then(sendResponse);
+    case 'fetchUnreadThreads':
+      getUnreadThreads().then(sendResponse);
       return true;
     default:
       break;
@@ -116,4 +94,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 const refreshIntervalInMinutes = 0.5;
 const refreshIntervalInMilliseconds = refreshIntervalInMinutes * 60 * 1000;
-setInterval(getMessages, refreshIntervalInMilliseconds);
+setInterval(getUnreadThreads, refreshIntervalInMilliseconds);

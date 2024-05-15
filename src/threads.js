@@ -1,7 +1,6 @@
 import { getEmail, markAs, moveToTrash } from './api.js';
-import { getMessages } from './background.js';
+import { getUnreadThreads } from './background.js';
 import { generateCalendar } from './calendar.js';
-import { formatReceived } from './formatters.js';
 import { generateMessage } from './message.js';
 
 const popupContainer = document.getElementById('popup-container');
@@ -52,7 +51,7 @@ const generateListItem = (messageData) => {
         <div class="subject">${subject}</div>
         <div class="sender">${sender}</div>
       </div>
-      <div class="received">${formatReceived(received)}</div>
+      <div class="received">${received}</div>
   `
   );
 
@@ -69,7 +68,7 @@ const renderRefreshButton = async () => {
   refreshButton.title = 'Refresh';
 
   refreshButton.addEventListener('click', () => {
-    getMessages().then(() => {
+    getUnreadThreads().then(() => {
       generateList();
       generateCalendar('today');
     });
@@ -98,8 +97,7 @@ export const generateList = async () => {
   popupContainer.style.display = 'flex';
   messageContainer.style.display = 'none';
 
-  const result = await chrome.storage.session.get(['unreadMessages']);
-  const messages = result.unreadMessages;
+  const { unreadThreads } = await chrome.storage.session.get(['unreadThreads']);
 
   const row = document.createElement('div');
   row.className = 'action-row';
@@ -113,7 +111,9 @@ export const generateList = async () => {
   listContainer.innerHTML = '';
   listContainer.appendChild(row);
 
-  if (messages.length) {
+  if (unreadThreads.length) {
+    // TODO
+    const messages = unreadThreads.map((thread) => thread.messages).flat();
     const listItems = messages.map(generateListItem);
     listContainer.append(...listItems);
   } else {
