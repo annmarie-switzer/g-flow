@@ -1,5 +1,5 @@
 import { markUnread, moveToTrash } from './api.js';
-import { generateList } from './popup.js';
+import { generateList } from './threads.js';
 
 const actionButton = (details) => {
   const btn = document.createElement('button');
