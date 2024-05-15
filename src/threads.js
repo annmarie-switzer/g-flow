@@ -131,4 +131,3 @@ export const generateList = async () => {
   messageContainer.style.display = 'none';
   popupContainer.style.display = 'flex';
 };
-

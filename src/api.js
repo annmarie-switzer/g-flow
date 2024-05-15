@@ -1,4 +1,4 @@
-export const getEmail = async () => {
+const soFetch = async (url, options) => {
   const { token } = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
   });
@@ -7,13 +7,17 @@ export const getEmail = async () => {
     Authorization: `Bearer ${token}`
   });
 
-  const res = await fetch(
-    'https://gmail.googleapis.com/gmail/v1/users/me/profile',
-    { headers }
-  );
+  options = { ...options, headers };
 
-  const { emailAddress } = await res.json();
-  return emailAddress;
+  try {
+    const response = await fetch(url, options);
+    if (response.ok) {
+      return response.json();
+    }
+  } catch (e) {
+    console.error(`API error for URL: ${url}. Error: ${e}`);
+    throw e;
+  }
 };
 
 export const getUnread = async (token) => {
@@ -47,120 +51,62 @@ export const getMessage = async (id, token) => {
   return reponse.json();
 };
 
-export const markRead = async (id) => {
-  const { token } = await chrome.runtime.sendMessage({
-    action: 'getAccessToken'
-  });
+export const getEmail = async () => {
+  const { emailAddress } = await soFetch(
+    'https://gmail.googleapis.com/gmail/v1/users/me/profile'
+  );
 
+  return emailAddress;
+};
+
+export const markRead = async (id) => {
   const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
 
   const body = JSON.stringify({
     removeLabelIds: ['UNREAD']
   });
 
-  try {
-    await fetch(apiUrl, { method: 'POST', headers, body });
-    chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-  } catch (e) {
-    console.error('Error marking email as read: ', e);
-  }
+  await soFetch(apiUrl, { method: 'POST', body });
+  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
 };
 
 export const markUnread = async (id) => {
-  const { token } = await chrome.runtime.sendMessage({
-    action: 'getAccessToken'
-  });
-
   const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
 
   const body = JSON.stringify({
     addLabelIds: ['UNREAD']
   });
 
-  try {
-    await fetch(apiUrl, { method: 'POST', headers, body });
-    chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
-  } catch (e) {
-    console.error('Error marking email as unread: ', error);
-  }
+  await soFetch(apiUrl, { method: 'POST', body });
+  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
 };
 
 export const moveToTrash = async (id) => {
-  const { token } = await chrome.runtime.sendMessage({
-    action: 'getAccessToken'
-  });
-
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
   const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/trash`;
   const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
 
-  const modifyBody = JSON.stringify({
+  const body = JSON.stringify({
     removeLabelIds: ['INBOX']
   });
 
-  const trashRes = await fetch(trashUrl, { method: 'POST', headers });
-  const modifyRes = await fetch(modifyUrl, {
-    method: 'POST',
-    headers,
-    body: modifyBody
-  });
+  const method = 'POST';
 
-  if (!trashRes.ok || !modifyRes.ok) {
-    throw new Error('Failed to move message to trash or remove from inbox');
-  }
+  await soFetch(trashUrl, { method });
+  await soFetch(modifyUrl, { method, body });
 
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(
-      { action: 'fetchUnreadMessages' },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(response);
-        }
-      }
-    );
-  });
+  chrome.runtime.sendMessage({ action: 'fetchUnreadMessages' });
 };
 
 export const getEvents = async (date) => {
-  const startOfDay = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
 
-  const endOfDay = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() + 1
-  );
+  const startOfDay = new Date(year, month, day).toISOString();
+  const endOfDay = new Date(year, month, day + 1).toISOString();
 
-  const { token } = await chrome.runtime.sendMessage({
-    action: 'getAccessToken'
-  });
+  const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${startOfDay}&timeMax=${endOfDay}&singleEvents=true&orderBy=startTime`;
 
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`
-  });
-
-  const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${startOfDay.toISOString()}&timeMax=${endOfDay.toISOString()}&singleEvents=true&orderBy=startTime`;
-
-  const response = await fetch(url, { headers });
-
-  const data = await response.json();
-  if (data.items) {
-    return data.items;
-  } else {
-    console.log('No events found.');
-  }
+  const { items } = await soFetch(url);
+  return items;
 };
