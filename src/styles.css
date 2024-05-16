@@ -69,41 +69,6 @@ button > svg > path {
   border-bottom: solid 1.5px var(--grey4);
 }
 
-.spinner {
-  animation: rotate 2s linear infinite;
-}
-
-.spinner circle {
-  stroke: var(--grey3);
-  stroke-linecap: round;
-  stroke-dasharray: 80, 200;
-  stroke-dashoffset: 0;
-  stroke-width: 4px;
-  fill: none;
-  animation: dash 1.5s ease-in-out infinite;
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
-  }
-}
-
 #popup-container .action-row > *:first-child,
 #message-container .action-row > *:first-child {
   margin-right: auto;
@@ -157,21 +122,11 @@ button > svg > path {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin: 0 16px;
-  padding: 8px 8px 8px 4px;
+  padding: 8px 16px;
   box-sizing: border-box;
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
   color: var(--grey3);
-}
-
-.btn-container {
-  display: flex;
-  align-items: center;
-}
-
-.btn-container button > svg > path {
-  fill: var(--grey3);
 }
 
 .data {
@@ -203,7 +158,6 @@ button > svg > path {
 
 .list-item:hover {
   background-color: var(--grey5);
-  border-radius: 8px;
   color: var(--grey2);
 }
 
@@ -217,7 +171,7 @@ button > svg > path {
 
 /* EVENTS */
 #events-container {
-  height: 250px;
+  height: 225px;
   display: flex;
   flex-direction: column;
   background-color: var(--grey5);
@@ -373,6 +327,7 @@ button > svg > path {
 
 .event-list-item:last-child {
   border-bottom: none;
+  margin-bottom: 4px;
 }
 
 .event-list-item.now {
@@ -426,19 +381,7 @@ button > svg > path {
   box-sizing: border-box;
 }
 
-.message-body-container .metadata {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  background-color: var(--grey5);
-  border-radius: 8px;
-}
-
-.message-body-container .metadata .subject {
-  font-size: 18px;
-}
-
-.message-body-container .metadata .sender {
-  font-size: 14px;
+.message-body-container .list-item {
+  margin: 0;
+  pointer-events: none;
 }
