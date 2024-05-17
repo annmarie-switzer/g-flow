@@ -1,4 +1,4 @@
-import { formatMessage } from './format-message.js';
+import { formatMessage } from './utils/format-message.js';
 
 let TOKEN;
 

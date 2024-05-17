@@ -371,7 +371,7 @@ button > svg > path {
   flex-direction: column;
 }
 
-.message-body-container {
+.message {
   flex: auto;
   display: flex;
   flex-direction: column;
@@ -381,7 +381,7 @@ button > svg > path {
   box-sizing: border-box;
 }
 
-.message-body-container .list-item {
+.message .list-item {
   margin: 0;
   pointer-events: none;
 }
