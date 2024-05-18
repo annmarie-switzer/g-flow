@@ -371,17 +371,12 @@ button > svg > path {
   flex-direction: column;
 }
 
-.message {
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  overflow: auto;
-  box-sizing: border-box;
+#message-container .data {
+  padding: 12px;
+  width: unset;
 }
 
-.message .list-item {
-  margin: 0;
-  pointer-events: none;
+.message {
+  padding: 8px;
+  border-bottom: solid var(--grey4) 3px;
 }

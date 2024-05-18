@@ -1,18 +1,16 @@
 import { getUnreadThreads } from '../background.js';
 import { actionButtonRow } from '../utils/action-button-row.js';
-import { getEmail, markAs } from '../utils/api.js';
+import { getEmail, markAs, moveToTrash } from '../utils/api.js';
 import { generateCalendar } from '../views/calendar.js';
 
 const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');
 const messageContainer = document.getElementById('message-container');
 
-const generateMessage = (messageData) => {
-  const { id, received, sender, snippet, subject, body } = messageData;
-
+const generateMessages = (messages) => {
   const messageContainer = document.getElementById('message-container');
 
-  const buttons = [
+  const actionRow = actionButtonRow([
     {
       icon: 'back',
       action: generateList,
@@ -28,39 +26,45 @@ const generateMessage = (messageData) => {
       action: () => markAs(id, 'unread').then(generateList),
       title: 'Mark unread'
     }
-  ];
+  ]);
 
-  messageContainer.appendChild(actionButtonRow(buttons));
+  messageContainer.appendChild(actionRow);
 
-  const message = document.createElement('div');
-  message.className = 'message';
+  const mostRecentMessage = messages[messages.length - 1];
+  const { id, sender, subject } = mostRecentMessage;
 
-  message.innerHTML = `
-    <div class="list-item">
-      <div class="data">
-        <span class="subject">${subject}</span>
-        <span class="sender">${sender}</span>
-      </div>
-      <div class="received">${received}</div>
-    </div>
-    
-    <div class="body">${body}</div>
+  const messageHeader = document.createElement('div');
+  messageHeader.className = 'data';
+  messageHeader.innerHTML = `
+    <span class="subject">${subject}</span>
+    <span class="sender">${sender}</span>
   `;
 
-  messageContainer.appendChild(message);
+  messageContainer.appendChild(messageHeader);
+
+  messages.reverse().forEach((messageData) => {
+    const { body } = messageData;
+
+    const message = document.createElement('div');
+    message.className = 'message';
+    message.innerHTML = `<div class="body">${body}</div>`;
+
+    messageContainer.appendChild(message);
+  });
 };
 
-const onListItemClick = (messageData) => {
-  generateMessage(messageData);
+const onListItemClick = (thread) => {
+  generateMessages(thread.messages);
 
   popupContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
 
-  markAs(messageData.id, 'read');
+  markAs(thread.id, 'read');
 };
 
-const generateListItem = (messageData) => {
-  const { id, received, sender, subject, snippet } = messageData;
+const generateListItem = (thread) => {
+  const latestMessage = thread.messages[thread.messages.length - 1];
+  const { received, sender, subject, snippet } = latestMessage;
 
   const listItem = document.createElement('div');
   listItem.className = 'list-item';
@@ -68,13 +72,13 @@ const generateListItem = (messageData) => {
 
   listItem.innerHTML = `
     <div class="data">
-    <div class="subject">${subject}</div>
-    <div class="sender">${sender}</div>
+      <div class="subject">${subject}</div>
+      <div class="sender">${sender}</div>
     </div>
     <div class="received">${received}</div>
   `;
 
-  listItem.addEventListener('click', () => onListItemClick(messageData));
+  listItem.addEventListener('click', () => onListItemClick(thread));
 
   return listItem;
 };
@@ -112,8 +116,7 @@ export const generateList = async () => {
   const { unreadThreads } = await chrome.storage.session.get(['unreadThreads']);
 
   if (unreadThreads.length) {
-    const messages = unreadThreads.map((thread) => thread.messages[0]);
-    const listItems = messages.map(generateListItem);
+    const listItems = unreadThreads.map(generateListItem);
     listContainer.append(...listItems);
   } else {
     const noMessages = document.createElement('div');

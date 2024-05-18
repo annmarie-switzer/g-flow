@@ -44,7 +44,7 @@ export const getEvents = async (date) => {
 
 /** @param action 'read' | 'unread' */
 export const markAs = async (id, action) => {
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
+  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/modify`;
 
   const actions = {
     read: 'removeLabelIds',
@@ -60,8 +60,8 @@ export const markAs = async (id, action) => {
 };
 
 export const moveToTrash = async (id) => {
-  const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/trash`;
-  const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`;
+  const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/trash`;
+  const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/modify`;
 
   const body = JSON.stringify({
     removeLabelIds: ['INBOX']
