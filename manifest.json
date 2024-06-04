@@ -21,7 +21,7 @@
       "https://www.googleapis.com/auth/calendar.events"
     ]
   },
-  "permissions": ["identity", "storage"],
+  "permissions": ["identity", "storage", "tabs"],
   "background": {
     "service_worker": "src/background.js",
     "type": "module"

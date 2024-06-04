@@ -91,6 +91,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'fetchUnreadThreads':
       getUnreadThreads().then(sendResponse);
       return true;
+    case 'openGmail':
+      chrome.tabs.query({ url: '*://mail.google.com/*' }, (tabs) => {
+        if (tabs.length > 0) {
+          chrome.tabs.update(tabs[0].id, { active: true });
+        } else {
+          chrome.tabs.create({ url: 'https://mail.google.com/' });
+        }
+      });
+      return true;
     default:
       break;
   }

@@ -120,7 +120,7 @@ const generateActionsRow = async () => {
     {
       text: await getEmail(),
       icon: 'forward-to-inbox',
-      action: () => window.open('https://mail.google.com/', '_blank'),
+      action: () => chrome.runtime.sendMessage({ action: 'openGmail' }),
       title: 'Go to your inbox'
     }
   ];
