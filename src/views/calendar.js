@@ -279,7 +279,7 @@ export const generateCalendar = async (day) => {
       )}</span>
       `;
 
-      const now = new Date(currentDate);
+      const now = new Date();
       const start = new Date(event.start.dateTime);
       const end = new Date(event.end.dateTime);
 
