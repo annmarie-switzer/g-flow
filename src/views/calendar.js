@@ -302,19 +302,12 @@ export const generateCalendar = async (day) => {
     eventListElement.appendChild(noEvents);
   }
 
-  // scroll the chart to 9am by default, or to the end if it's after 5pm
-  const nineAM = new Date();
-  nineAM.setHours(9);
-  nineAM.setMinutes(0);
+  // scroll the chart to 2 hours before the current time
+  const twoHoursBefore = new Date();
+  twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
+  twoHoursBefore.setMinutes(0);
 
-  const fivePM = new Date();
-  fivePM.setHours(17);
-  fivePM.setMinutes(0);
-
-  timelineElement.scrollLeft =
-    day !== 'today' || today.getHours() < 17
-      ? datetimeToPosition(nineAM)
-      : datetimeToPosition(fivePM);
+  timelineElement.scrollLeft = datetimeToPosition(twoHoursBefore);
 
   // Add event listeners to the event pills and list items
   document.querySelectorAll('.event, .event-list-item').forEach((element) => {
