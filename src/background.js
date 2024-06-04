@@ -17,17 +17,21 @@ const getThreads = async () => {
   const response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
   const data = await response.json();
 
-  const threadReqs = data.threads.map(async (thread) => {
-    const response = await fetch(`${apiUrl}/${thread.id}`, {
-      method: 'GET',
-      headers
+  if (data.threads) {
+    const threadReqs = data.threads.map(async (thread) => {
+      const response = await fetch(`${apiUrl}/${thread.id}`, {
+        method: 'GET',
+        headers
+      });
+      return response.json();
     });
-    return response.json();
-  });
 
-  const threads = await Promise.all(threadReqs);
+    const threads = await Promise.all(threadReqs);
 
-  return threads;
+    return threads;
+  } else {
+    return [];
+  }
 };
 
 export const getUnreadThreads = async () => {
