@@ -23,7 +23,8 @@ const generateMessages = (messages) => {
     },
     {
       icon: 'mark-unread',
-      action: () => markAs(id, 'unread').then(generateList),
+      action: () =>
+        markAs(id, 'unread').then(getUnreadThreads).then(generateList),
       title: 'Mark unread'
     }
   ]);
