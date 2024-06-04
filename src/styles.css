@@ -57,6 +57,41 @@ button > svg > path {
   fill: var(--grey2);
 }
 
+.spinner {
+  animation: rotate 2s linear infinite;
+}
+
+.spinner circle {
+  stroke: var(--blue);
+  stroke-linecap: round;
+  stroke-dasharray: 80, 200;
+  stroke-dashoffset: 0;
+  stroke-width: 6px;
+  fill: none;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
 .action-row {
   position: sticky;
   top: 0;
@@ -104,6 +139,7 @@ button > svg > path {
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 600px;
 }
 
 #popup-container .action-row {
@@ -114,14 +150,14 @@ button > svg > path {
 #list-container {
   display: flex;
   flex-direction: column;
-  height: 300px;
+  height: 375px;
   overflow-y: auto;
 }
 
 .list-item {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-items: center;
   padding: 8px 16px;
   box-sizing: border-box;
   cursor: pointer;
@@ -130,6 +166,12 @@ button > svg > path {
 }
 
 .data {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.data > div:first-child {
   width: 274px;
   display: flex;
   flex-direction: column;
@@ -147,6 +189,13 @@ button > svg > path {
   margin-left: auto;
   flex-shrink: 0;
   font-size: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.received > button:not(.spinner) > svg > path {
+  fill: currentColor;
 }
 
 .sender {
@@ -154,6 +203,11 @@ button > svg > path {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.snippet {
+  height: 32px;
+  overflow: hidden;
 }
 
 .list-item:hover {

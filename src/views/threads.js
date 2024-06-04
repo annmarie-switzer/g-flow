@@ -37,8 +37,10 @@ const generateMessages = (messages) => {
   const messageHeader = document.createElement('div');
   messageHeader.className = 'data';
   messageHeader.innerHTML = `
-    <span class="subject">${subject}</span>
-    <span class="sender">${sender}</span>
+    <div>
+      <span class="subject">${subject}</span>
+      <span class="sender">${sender}</span>
+    </div>
   `;
 
   messageContainer.appendChild(messageHeader);
@@ -69,15 +71,35 @@ const generateListItem = (thread) => {
 
   const listItem = document.createElement('div');
   listItem.className = 'list-item';
-  listItem.title = snippet;
 
   listItem.innerHTML = `
     <div class="data">
-      <div class="subject">${subject}</div>
-      <div class="sender">${sender}</div>
+      <div>
+        <div class="subject">${subject}</div>
+        <div class="sender">${sender}</div>
+      </div>
+      <div class="received">${received}</div>
     </div>
-    <div class="received">${received}</div>
+    <div class="snippet">${snippet}</div>
   `;
+
+  const deleteButton = document.createElement('button');
+  deleteButton.title = 'Move to trash';
+
+  deleteButton.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" /></svg>';
+
+  deleteButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+
+    deleteButton.innerHTML =
+      '<svg class="spinner" viewBox="0 0 50 50" height="18" width="18"><circle cx="25" cy="25" r="20"></circle></svg>';
+
+    moveToTrash(thread.id).then(generateList);
+  });
+
+  const receivedDiv = listItem.querySelector('.received');
+  receivedDiv.appendChild(deleteButton);
 
   listItem.addEventListener('click', () => onListItemClick(thread));
 

@@ -56,7 +56,7 @@ export const markAs = async (id, action) => {
   });
 
   await soFetch(apiUrl, { method: 'POST', body });
-  chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
+  await chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
 };
 
 export const moveToTrash = async (id) => {
@@ -72,5 +72,5 @@ export const moveToTrash = async (id) => {
   await soFetch(trashUrl, { method });
   await soFetch(modifyUrl, { method, body });
 
-  chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
+  await chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
 };
