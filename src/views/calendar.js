@@ -18,7 +18,11 @@ const isEndTimeNextDay = (eventStart, eventEnd) => {
 const datetimeToPosition = (dateTime) => {
   const date = new Date(dateTime);
   const totalMinutes = date.getHours() * 60 + date.getMinutes();
-  return (totalMinutes / (24 * 60)) * 897; // 897 is the final width of the timeline
+
+  const xAxisElement = document.querySelector('.x-axis');
+  const xAxisWidth = xAxisElement.scrollWidth;
+
+  return (totalMinutes / (24 * 60)) * xAxisWidth;
 };
 
 const formatTime = (dateTime, withPeriod = true) => {
@@ -299,8 +303,18 @@ export const generateCalendar = async (day) => {
   }
 
   // scroll the chart to 9am by default, or to the end if it's after 5pm
+  const nineAM = new Date();
+  nineAM.setHours(9);
+  nineAM.setMinutes(0);
+
+  const fivePM = new Date();
+  fivePM.setHours(17);
+  fivePM.setMinutes(0);
+
   timelineElement.scrollLeft =
-    day !== 'today' || today.getHours() < 17 ? 320 : 561;
+    day !== 'today' || today.getHours() < 17
+      ? datetimeToPosition(nineAM)
+      : datetimeToPosition(fivePM);
 
   // Add event listeners to the event pills and list items
   document.querySelectorAll('.event, .event-list-item').forEach((element) => {
