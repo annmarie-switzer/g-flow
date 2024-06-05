@@ -96,7 +96,11 @@ const generateListItem = (thread) => {
       '<svg class="spinner" viewBox="0 0 50 50" height="18" width="18"><circle cx="25" cy="25" r="20"></circle></svg>';
 
     moveToTrash(thread.id).then(() => {
-      listItem.remove();
+      listItem.style.opacity = 0;
+      listItem.addEventListener('transitionend', (event) => {
+        listItem.remove();
+        event.currentTarget.removeEventListener('transitionend', event.handler);
+      });
     });
   });
 

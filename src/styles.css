@@ -163,6 +163,7 @@ button > svg > path {
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
   color: var(--grey3);
+  transition: opacity 0.3s ease-out;
 }
 
 .data {
