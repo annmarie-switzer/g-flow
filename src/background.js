@@ -1,7 +1,6 @@
 import { formatMessage } from './utils/format-message.js';
 
 let TOKEN;
-
 const badgeColor = '#ffa500'; // var(--orange)
 
 const getThreads = async () => {
@@ -14,7 +13,14 @@ const getThreads = async () => {
   const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
   const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
 
-  const response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+  let response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+
+  if (response.status === 401) {
+    TOKEN = await chrome.identity.getAuthToken({ interactive: false });
+    headers.set('Authorization', `Bearer ${TOKEN}`);
+    response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+  }
+
   const data = await response.json();
 
   if (data.threads) {
@@ -63,18 +69,6 @@ export const getUnreadThreads = async () => {
   }
 };
 
-// On startup, access the token, fetch messages, and set data in storage
-chrome.identity.getAuthToken({ interactive: false }, (token) => {
-  if (token && !chrome.runtime.lastError) {
-    TOKEN = token;
-    getUnreadThreads();
-  } else {
-    console.error('User is unauthenticated: ', chrome.runtime.lastError);
-    chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: badgeColor });
-  }
-});
-
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
@@ -105,6 +99,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-const refreshIntervalInMinutes = 0.5;
-const refreshIntervalInMilliseconds = refreshIntervalInMinutes * 60 * 1000;
-setInterval(getUnreadThreads, refreshIntervalInMilliseconds);
+// Fetch token and data on startup
+chrome.identity.getAuthToken({ interactive: false }, (token) => {
+  if (token && !chrome.runtime.lastError) {
+    TOKEN = token;
+    getUnreadThreads();
+  } else {
+    console.error('User is unauthenticated: ', chrome.runtime.lastError);
+    chrome.action.setBadgeText({ text: '!' });
+    chrome.action.setBadgeBackgroundColor({ color: badgeColor });
+  }
+});
+
+// Refetch every 30 seconds
+setInterval(getUnreadThreads, 30_000);
