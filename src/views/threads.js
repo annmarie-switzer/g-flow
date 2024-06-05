@@ -95,7 +95,9 @@ const generateListItem = (thread) => {
     deleteButton.innerHTML =
       '<svg class="spinner" viewBox="0 0 50 50" height="18" width="18"><circle cx="25" cy="25" r="20"></circle></svg>';
 
-    moveToTrash(thread.id).then(generateList);
+    moveToTrash(thread.id).then(() => {
+      listItem.remove();
+    });
   });
 
   const receivedDiv = listItem.querySelector('.received');
