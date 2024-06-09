@@ -34,68 +34,6 @@ body {
   color: var(--grey2);
 }
 
-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  padding: 4px;
-  background-color: transparent;
-  font-family: inherit;
-  font-weight: inherit;
-  gap: 6px;
-  color: inherit;
-}
-
-button:hover {
-  background-color: #e6e6e61a;
-}
-
-button:active {
-  background-color: #e6e6e633;
-}
-
-.action-row button > svg > path {
-  fill: var(--grey2);
-}
-
-.spinner {
-  animation: rotate 2s linear infinite;
-}
-
-.spinner circle {
-  stroke: var(--blue);
-  stroke-linecap: round;
-  stroke-dasharray: 80, 200;
-  stroke-dashoffset: 0;
-  stroke-width: 6px;
-  fill: none;
-  animation: dash 1.5s ease-in-out infinite;
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
-  }
-}
-
 #popup-container {
   display: flex;
   flex-direction: column;

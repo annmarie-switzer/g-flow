@@ -1,4 +1,5 @@
 import { getEvents } from '../api.js';
+import { generateButton } from '../shared/button.js';
 
 const isEndTimeNextDay = (eventStart, eventEnd) => {
   const start = new Date(eventStart.getTime());
@@ -196,13 +197,10 @@ export const generateTimeline = async (day) => {
   const dateLabel = renderDateLabel(currentDate);
   timelineActionsElement.appendChild(dateLabel);
 
-  const dateToggle = document.createElement('button');
-  dateToggle.id = 'date-toggle';
-  dateToggle.textContent = day === 'today' ? 'See Tomorrow' : 'See Today';
-
-  dateToggle.addEventListener('click', () => {
-    day = day === 'today' ? 'tomorrow' : 'today';
-    generateTimeline(day);
+  const buttonDay = day === 'today' ? 'tomorrow' : 'today';
+  const dateToggle = generateButton({
+    text: `See ${buttonDay.charAt(0).toUpperCase() + buttonDay.slice(1)}`,
+    action: () => generateTimeline(buttonDay)
   });
 
   timelineActionsElement.appendChild(dateToggle);

@@ -14,12 +14,14 @@ export const renderMessages = (messages) => {
     {
       icon: deleteIcon,
       action: () => moveToTrash(id).then(generateThreadList),
-      title: 'Move to trash'
+      title: 'Move to trash',
+      spinner: true,
     },
     {
       icon: markUnreadIcon,
       action: () => markAs(id, 'unread').then(generateThreadList),
-      title: 'Mark unread'
+      title: 'Mark unread',
+      spinner: true,
     }
   ]);
 
