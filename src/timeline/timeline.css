@@ -10,7 +10,7 @@
   background: var(--grey4);
 }
 
-#events-container {
+#timeline-container {
   height: 225px;
   display: flex;
   flex-direction: column;

@@ -180,7 +180,7 @@ const renderDateLabel = (currentDate) => {
 };
 
 /** @param day 'today' | 'tomorrow' */
-export const generateCalendar = async (day) => {
+export const generateTimeline = async (day) => {
   const timelineActionsElement = document.getElementById('timeline-actions');
   const timelineElement = document.getElementById('timeline');
   const eventListElement = document.getElementById('event-list');
@@ -202,7 +202,7 @@ export const generateCalendar = async (day) => {
 
   dateToggle.addEventListener('click', () => {
     day = day === 'today' ? 'tomorrow' : 'today';
-    generateCalendar(day);
+    generateTimeline(day);
   });
 
   timelineActionsElement.appendChild(dateToggle);

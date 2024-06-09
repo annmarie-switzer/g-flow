@@ -1,10 +1,10 @@
-import { generateCalendar } from './calendar/calendar.js';
-import { generateList } from './threads/threads.js';
+import { generateThreadList } from './threads/threads.js';
+import { generateTimeline } from './timeline/timeline.js';
 
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (token) => {
   if (token) {
-    generateList();
-    generateCalendar('today');
+    generateThreadList();
+    generateTimeline('today');
   } else {
     console.error(
       "Popup couldn't get access token: ",

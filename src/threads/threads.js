@@ -1,61 +1,14 @@
 import { getEmail, markAs, moveToTrash } from '../api.js';
-import { generateCalendar } from '../calendar/calendar.js';
+import { renderMessages } from '../messages/messages.js';
+import { generateTimeline } from '../timeline/timeline.js';
 import { actionButtonRow } from './action-button-row.js';
 
 const popupContainer = document.getElementById('popup-container');
-const listContainer = document.getElementById('list-container');
-const messageContainer = document.getElementById('message-container');
-
-const generateMessages = (messages) => {
-  const messageContainer = document.getElementById('message-container');
-
-  const actionRow = actionButtonRow([
-    {
-      icon: 'back',
-      action: generateList,
-      title: 'Go back'
-    },
-    {
-      icon: 'delete',
-      action: () => moveToTrash(id).then(generateList),
-      title: 'Move to trash'
-    },
-    {
-      icon: 'mark-unread',
-      action: () => markAs(id, 'unread').then(generateList),
-      title: 'Mark unread'
-    }
-  ]);
-
-  messageContainer.appendChild(actionRow);
-
-  const mostRecentMessage = messages[messages.length - 1];
-  const { id, sender, subject } = mostRecentMessage;
-
-  const messageHeader = document.createElement('div');
-  messageHeader.className = 'data';
-  messageHeader.innerHTML = `
-    <div>
-      <span class="subject">${subject}</span>
-      <span class="sender">${sender}</span>
-    </div>
-  `;
-
-  messageContainer.appendChild(messageHeader);
-
-  messages.reverse().forEach((messageData) => {
-    const { body } = messageData;
-
-    const message = document.createElement('div');
-    message.className = 'message';
-    message.innerHTML = `<div class="body">${body}</div>`;
-
-    messageContainer.appendChild(message);
-  });
-};
+const threadsContainer = document.getElementById('threads-container');
+const messageContainer = document.getElementById('messages-container');
 
 const onListItemClick = (thread) => {
-  generateMessages(thread.messages);
+  renderMessages(thread.messages);
 
   popupContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
@@ -116,8 +69,8 @@ const generateActionsRow = async () => {
       icon: 'refresh',
       action: () =>
         chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' }, () => {
-          generateList();
-          generateCalendar('today');
+          generateThreadList();
+          generateTimeline('today');
         }),
       title: 'Refresh'
     },
@@ -132,27 +85,28 @@ const generateActionsRow = async () => {
   return actionButtonRow(buttons);
 };
 
-export const generateList = async () => {
+export const generateThreadList = async () => {
   popupContainer.style.display = 'flex';
   messageContainer.style.display = 'none';
-  listContainer.innerHTML = '';
+  threadsContainer.innerHTML = '';
 
   const actionsRow = await generateActionsRow();
-  listContainer.appendChild(actionsRow);
+  threadsContainer.appendChild(actionsRow);
 
   const { unreadThreads } = await chrome.storage.session.get(['unreadThreads']);
 
   if (unreadThreads.length) {
     const listItems = unreadThreads.map(generateListItem);
-    listContainer.append(...listItems);
+    threadsContainer.append(...listItems);
   } else {
     const noMessages = document.createElement('div');
+
     noMessages.className = 'no-messages';
     noMessages.innerHTML = `
       <div class="no-messages">No unread messages</div>
     `;
 
-    listContainer.appendChild(noMessages);
+    threadsContainer.appendChild(noMessages);
   }
 
   messageContainer.innerHTML = '';
