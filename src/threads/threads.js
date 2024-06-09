@@ -1,7 +1,7 @@
 import { getEmail, markAs, moveToTrash } from '../api.js';
 import { renderMessages } from '../messages/messages.js';
+import { actionButtonRow } from '../shared/action-button-row.js';
 import { generateTimeline } from '../timeline/timeline.js';
-import { actionButtonRow } from './action-button-row.js';
 
 const popupContainer = document.getElementById('popup-container');
 const threadsContainer = document.getElementById('threads-container');

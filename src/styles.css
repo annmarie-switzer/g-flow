@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed&display=swap');
+@import url('./shared/shared.css');
 @import url('./threads/threads.css');
 @import url('./messages/messages.css');
 @import url('./timeline/timeline.css');
@@ -56,7 +57,7 @@ button:active {
   background-color: #e6e6e633;
 }
 
-button > svg > path {
+.action-row button > svg > path {
   fill: var(--grey2);
 }
 

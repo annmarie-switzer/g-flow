@@ -1,5 +1,5 @@
 import { markAs, moveToTrash } from '../api.js';
-import { actionButtonRow } from '../threads/action-button-row.js';
+import { actionButtonRow } from '../shared/action-button-row.js';
 import { generateThreadList } from '../threads/threads.js';
 
 export const renderMessages = (messages) => {

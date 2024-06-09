@@ -12,23 +12,6 @@
   background: var(--grey3);
 }
 
-.action-row {
-  position: sticky;
-  top: 0;
-  background-color: var(--grey7);
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border-bottom: solid 1.5px var(--grey4);
-  margin-bottom: 8px;
-}
-
-.action-row > *:first-child {
-  margin-right: auto;
-}
-
 #threads-container {
   display: flex;
   flex-direction: column;
