@@ -1,5 +1,5 @@
 const soFetch = async (url, options) => {
-  const { token } = await chrome.runtime.sendMessage({
+  const token = await chrome.runtime.sendMessage({
     action: 'getAccessToken'
   });
 

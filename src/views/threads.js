@@ -1,4 +1,3 @@
-import { getUnreadThreads } from '../background.js';
 import { actionButtonRow } from '../utils/action-button-row.js';
 import { getEmail, markAs, moveToTrash } from '../utils/api.js';
 import { generateCalendar } from '../views/calendar.js';
@@ -23,8 +22,7 @@ const generateMessages = (messages) => {
     },
     {
       icon: 'mark-unread',
-      action: () =>
-        markAs(id, 'unread').then(getUnreadThreads).then(generateList),
+      action: () => markAs(id, 'unread').then(generateList),
       title: 'Mark unread'
     }
   ]);
@@ -117,7 +115,7 @@ const generateActionsRow = async () => {
     {
       icon: 'refresh',
       action: () =>
-        getUnreadThreads().then(() => {
+        chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' }, () => {
           generateList();
           generateCalendar('today');
         }),

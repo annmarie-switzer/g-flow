@@ -1,12 +1,14 @@
 import { generateCalendar } from './views/calendar.js';
 import { generateList } from './views/threads.js';
 
-// When the extension is clicked, fetch the auth token and generate the markup
-chrome.runtime.sendMessage({ action: 'getAccessToken' }, (res) => {
-  if (res.token && !chrome.runtime.lastError) {
+chrome.runtime.sendMessage({ action: 'getAccessToken' }, (token) => {
+  if (token) {
     generateList();
     generateCalendar('today');
   } else {
-    console.error('Error getting access token: ', chrome.runtime.lastError);
+    console.error(
+      "Popup couldn't get access token: ",
+      chrome.runtime.lastError
+    );
   }
 });

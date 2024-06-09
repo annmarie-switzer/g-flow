@@ -1,48 +1,53 @@
 import { formatMessage } from './utils/format-message.js';
 
-let TOKEN;
 const badgeColor = '#ffa500'; // var(--orange)
 
-const getThreads = async () => {
-  const headers = new Headers({
-    Authorization: `Bearer ${TOKEN}`
-  });
+const getToken = async (interactive = false) => {
+  const { token } = await chrome.identity.getAuthToken({ interactive });
+  return token;
+};
 
-  const apiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/threads';
-
-  const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
-  const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
-
-  let response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
-
-  if (response.status === 401) {
-    TOKEN = await chrome.identity.getAuthToken({ interactive: false });
-    headers.set('Authorization', `Bearer ${TOKEN}`);
-    response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
-  }
-
-  const data = await response.json();
-
-  if (data.threads) {
-    const threadReqs = data.threads.map(async (thread) => {
-      const response = await fetch(`${apiUrl}/${thread.id}`, {
-        method: 'GET',
-        headers
-      });
-      return response.json();
+const getThreads = async (TOKEN) => {
+  try {
+    const headers = new Headers({
+      Authorization: `Bearer ${TOKEN}`
     });
 
-    const threads = await Promise.all(threadReqs);
+    const apiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/threads';
+    const queryParams = new URLSearchParams({ q: 'is:unread in:inbox' });
+    const apiUrlWithQuery = `${apiUrl}?${queryParams.toString()}`;
 
-    return threads;
-  } else {
-    return [];
+    const response = await fetch(apiUrlWithQuery, { method: 'GET', headers });
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    if (data.threads) {
+      const threadReqs = data.threads.map(async (thread) => {
+        const response = await fetch(`${apiUrl}/${thread.id}`, {
+          method: 'GET',
+          headers
+        });
+        return response.json();
+      });
+
+      const threads = await Promise.all(threadReqs);
+
+      return threads;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error getting threads: ', error);
   }
 };
 
-export const getUnreadThreads = async () => {
+const getUnreadThreads = async (token) => {
   try {
-    const threads = await getThreads();
+    const TOKEN = token ?? (await getToken());
+    const threads = await getThreads(TOKEN);
 
     const unreadThreads = threads.map((thread) => {
       const formattedMessages = thread.messages.map(formatMessage);
@@ -63,24 +68,32 @@ export const getUnreadThreads = async () => {
 
     return unreadThreads;
   } catch (error) {
-    console.error('Error getting threads: ', error);
+    console.error('Error getting unread threads: ', error);
     chrome.action.setBadgeText({ text: '!' });
     chrome.action.setBadgeBackgroundColor({ color: badgeColor });
   }
+};
+
+const startup = () => {
+  getToken().then((token) => {
+    if (token) {
+      getUnreadThreads(token);
+    } else {
+      console.error(
+        "Background service couldn't get access token: ",
+        chrome.runtime.lastError
+      );
+      chrome.action.setBadgeText({ text: '!' });
+      chrome.action.setBadgeBackgroundColor({ color: badgeColor });
+    }
+  });
 };
 
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case 'getAccessToken':
-      chrome.identity.getAuthToken({ interactive: true }, (token) => {
-        if (token === TOKEN) {
-          sendResponse({ token });
-        } else {
-          TOKEN = token;
-          getUnreadThreads().then(() => sendResponse({ token }));
-        }
-      });
+      getToken(true).then((token) => sendResponse(token));
       return true;
     case 'fetchUnreadThreads':
       getUnreadThreads().then(sendResponse);
@@ -99,17 +112,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// Fetch token and data on startup
-chrome.identity.getAuthToken({ interactive: false }, (token) => {
-  if (token && !chrome.runtime.lastError) {
-    TOKEN = token;
-    getUnreadThreads();
-  } else {
-    console.error('User is unauthenticated: ', chrome.runtime.lastError);
-    chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: badgeColor });
-  }
-});
-
-// Refetch every 30 seconds
-setInterval(getUnreadThreads, 30_000);
+startup();
+setInterval(startup, 30_000);
