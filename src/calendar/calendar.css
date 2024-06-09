@@ -1,0 +1,201 @@
+#timeline::-webkit-scrollbar {
+  height: 3px;
+}
+
+#timeline::-webkit-scrollbar-thumb {
+  background-color: var(--grey7);
+}
+
+#timeline::-webkit-scrollbar-thumb:hover {
+  background: var(--grey4);
+}
+
+#events-container {
+  height: 225px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--grey5);
+  border-radius: 8px;
+  margin: 8px;
+}
+
+#timeline-actions {
+  flex: 0.3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+}
+
+#timeline-actions > button > svg > path {
+  fill: var(--grey2);
+}
+
+#timeline-actions > span:first-child {
+  margin-right: auto;
+}
+
+#timeline {
+  flex: 1;
+  position: relative;
+  margin: 0px 24px;
+  font-size: 12px;
+  overflow-x: scroll;
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  height: 50%;
+}
+
+.tick {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 1px;
+  background-color: var(--grey2);
+}
+
+.tick:nth-child(odd) {
+  background-color: var(--grey3);
+}
+
+.tick.now {
+  width: 3px;
+  background-color: var(--dark-green);
+  border-radius: 16px;
+}
+
+.tick-label {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+  width: max-content;
+}
+
+.event {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 16px;
+  background-color: var(--blue);
+  cursor: pointer;
+}
+
+.event:hover,
+.event.hover {
+  outline-style: solid;
+  outline-width: 1.5px;
+  outline-offset: 2px;
+  outline-color: var(--blue);
+}
+
+.event.now {
+  background-color: var(--green);
+}
+
+.event.now:hover,
+.event.now.hover {
+  outline-color: var(--green);
+}
+
+.event.past {
+  background-color: var(--dark-blue);
+}
+
+.event.past:hover,
+.event.past.hover {
+  outline-color: var(--dark-blue);
+}
+
+.event.tentative {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.event.tentative.now {
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.event.tentative.past {
+  box-shadow: inset 0 0 0 1px var(--dark-blue);
+}
+
+.event.all-day {
+  background-color: var(--light-purple);
+  top: unset;
+}
+
+.event.all-day:hover,
+.event.all-day.hover {
+  outline-color: var(--light-purple);
+  outline-width: 1px;
+  outline-offset: 1.5px;
+}
+
+#event-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.event-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 4px 8px;
+  margin: 0 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-bottom: solid 0.5px var(--grey4);
+}
+
+.event-list-item > span:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.event-list-item > span:last-child {
+  flex-shrink: 0;
+}
+
+.event-list-item:last-child {
+  border-bottom: none;
+  margin-bottom: 4px;
+}
+
+.event-list-item.now {
+  color: var(--green);
+}
+
+.event-list-item.all-day {
+  color: var(--light-purple);
+}
+
+.event-list-item:hover,
+.event-list-item.hover {
+  color: var(--grey8);
+  background-color: var(--blue);
+  border-radius: 8px;
+}
+
+.event-list-item.now:hover,
+.event-list-item.now.hover {
+  background-color: var(--green);
+}
+
+.event-list-item.all-day:hover,
+.event-list-item.all-day.hover {
+  background-color: var(--light-purple);
+}
+
+.no-events {
+  text-align: center;
+  padding-top: 12px;
+}
