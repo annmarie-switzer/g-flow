@@ -78,7 +78,3 @@ button > svg > path {
 .action-row > *:first-child {
   margin-right: auto;
 }
-
-.action-row button > svg > path {
-  fill: var(--grey2);
-}
