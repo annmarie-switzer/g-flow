@@ -1,4 +1,4 @@
-import { formatMessage } from './utils/format-message.js';
+import { formatMessage } from './threads/format-message.js';
 
 const badgeColor = '#ffa500'; // var(--orange)
 

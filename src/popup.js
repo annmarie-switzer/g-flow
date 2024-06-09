@@ -1,5 +1,5 @@
-import { generateCalendar } from './views/calendar.js';
-import { generateList } from './views/threads.js';
+import { generateCalendar } from './calendar/calendar.js';
+import { generateList } from './threads/threads.js';
 
 chrome.runtime.sendMessage({ action: 'getAccessToken' }, (token) => {
   if (token) {

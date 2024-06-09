@@ -1,6 +1,6 @@
-import { actionButtonRow } from '../utils/action-button-row.js';
-import { getEmail, markAs, moveToTrash } from '../utils/api.js';
-import { generateCalendar } from '../views/calendar.js';
+import { getEmail, markAs, moveToTrash } from '../api.js';
+import { generateCalendar } from '../calendar/calendar.js';
+import { actionButtonRow } from './action-button-row.js';
 
 const popupContainer = document.getElementById('popup-container');
 const listContainer = document.getElementById('list-container');

@@ -1,4 +1,4 @@
-import { getEvents } from '../utils/api.js';
+import { getEvents } from '../api.js';
 
 const isEndTimeNextDay = (eventStart, eventEnd) => {
   const start = new Date(eventStart.getTime());
