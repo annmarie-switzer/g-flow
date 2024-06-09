@@ -1,7 +1,12 @@
 import { getEmail, markAs, moveToTrash } from '../api.js';
-import { deleteIcon, forwardToInboxIcon, refreshIcon } from '../icons/index.js';
 import { renderMessages } from '../messages/messages.js';
-import { actionButtonRow, generateButton } from '../shared/index.js';
+import {
+  actionButtonRow,
+  deleteIcon,
+  forwardToInboxIcon,
+  generateButton,
+  refreshIcon
+} from '../shared/index.js';
 import { generateTimeline } from '../timeline/timeline.js';
 
 const popupContainer = document.getElementById('popup-container');
@@ -39,14 +44,18 @@ const generateListItem = (thread) => {
     icon: deleteIcon,
     title: 'Move to trash',
     spinner: true,
-    action: () => moveToTrash(thread.id).then(() => {
-      listItem.style.opacity = 0;
-      listItem.addEventListener('transitionend', (event) => {
-        listItem.remove();
-        event.currentTarget.removeEventListener('transitionend', event.handler);
-      });
-    })
-  })
+    action: () =>
+      moveToTrash(thread.id).then(() => {
+        listItem.style.opacity = 0;
+        listItem.addEventListener('transitionend', (event) => {
+          listItem.remove();
+          event.currentTarget.removeEventListener(
+            'transitionend',
+            event.handler
+          );
+        });
+      })
+  });
 
   const receivedDiv = listItem.querySelector('.received');
   receivedDiv.appendChild(deleteButton);

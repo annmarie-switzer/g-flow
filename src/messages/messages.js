@@ -1,6 +1,6 @@
 import { markAs, moveToTrash } from '../api.js';
-import { backIcon, deleteIcon, markUnreadIcon } from '../icons/index.js';
 import { actionButtonRow } from '../shared/action-button-row.js';
+import { backIcon, deleteIcon, markUnreadIcon } from '../shared/index.js';
 import { generateThreadList } from '../threads/threads.js';
 
 export const renderMessages = (messages) => {
