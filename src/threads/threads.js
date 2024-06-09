@@ -1,8 +1,7 @@
 import { getEmail, markAs, moveToTrash } from '../api.js';
 import { deleteIcon, forwardToInboxIcon, refreshIcon } from '../icons/index.js';
 import { renderMessages } from '../messages/messages.js';
-import { actionButtonRow } from '../shared/action-button-row.js';
-import { generateButton } from '../shared/button.js';
+import { actionButtonRow, generateButton } from '../shared/index.js';
 import { generateTimeline } from '../timeline/timeline.js';
 
 const popupContainer = document.getElementById('popup-container');

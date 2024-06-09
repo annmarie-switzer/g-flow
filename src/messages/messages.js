@@ -2,6 +2,7 @@ import { markAs, moveToTrash } from '../api.js';
 import { backIcon, deleteIcon, markUnreadIcon } from '../icons/index.js';
 import { actionButtonRow } from '../shared/action-button-row.js';
 import { generateThreadList } from '../threads/threads.js';
+
 export const renderMessages = (messages) => {
   const messagesContainer = document.getElementById('messages-container');
 
@@ -15,13 +16,13 @@ export const renderMessages = (messages) => {
       icon: deleteIcon,
       action: () => moveToTrash(id).then(generateThreadList),
       title: 'Move to trash',
-      spinner: true,
+      spinner: true
     },
     {
       icon: markUnreadIcon,
       action: () => markAs(id, 'unread').then(generateThreadList),
       title: 'Mark unread',
-      spinner: true,
+      spinner: true
     }
   ]);
 
