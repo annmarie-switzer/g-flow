@@ -1,6 +1,8 @@
 import { getEmail, markAs, moveToTrash } from '../api.js';
+import { deleteIcon, forwardToInboxIcon, refreshIcon } from '../icons/index.js';
 import { renderMessages } from '../messages/messages.js';
 import { actionButtonRow } from '../shared/action-button-row.js';
+import { generateButton } from '../shared/button.js';
 import { generateTimeline } from '../timeline/timeline.js';
 
 const popupContainer = document.getElementById('popup-container');
@@ -34,26 +36,18 @@ const generateListItem = (thread) => {
     <div class="snippet">${snippet}</div>
   `;
 
-  const deleteButton = document.createElement('button');
-  deleteButton.title = 'Move to trash';
-
-  deleteButton.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" /></svg>';
-
-  deleteButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-
-    deleteButton.innerHTML =
-      '<svg class="spinner" viewBox="0 0 50 50" height="18" width="18"><circle cx="25" cy="25" r="20"></circle></svg>';
-
-    moveToTrash(thread.id).then(() => {
+  const deleteButton = generateButton({
+    icon: deleteIcon,
+    title: 'Move to trash',
+    spinner: true,
+    action: () => moveToTrash(thread.id).then(() => {
       listItem.style.opacity = 0;
       listItem.addEventListener('transitionend', (event) => {
         listItem.remove();
         event.currentTarget.removeEventListener('transitionend', event.handler);
       });
-    });
-  });
+    })
+  })
 
   const receivedDiv = listItem.querySelector('.received');
   receivedDiv.appendChild(deleteButton);
@@ -66,7 +60,7 @@ const generateListItem = (thread) => {
 const generateActionsRow = async () => {
   const buttons = [
     {
-      icon: 'refresh',
+      icon: refreshIcon,
       action: () =>
         chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' }, () => {
           generateThreadList();
@@ -76,7 +70,7 @@ const generateActionsRow = async () => {
     },
     {
       text: await getEmail(),
-      icon: 'forward-to-inbox',
+      icon: forwardToInboxIcon,
       action: () => chrome.runtime.sendMessage({ action: 'openGmail' }),
       title: 'Go to your inbox'
     }
