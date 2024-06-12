@@ -255,7 +255,9 @@ export const generateTimeline = async (day) => {
 
       return { ...e, isFutureEvent, isAllDayEvent };
     })
-    .filter((e) => e.isFutureEvent || e.isAllDayEvent);
+    .filter((e) =>
+      day === 'today' ? e.isFutureEvent || e.isAllDayEvent : true
+    );
 
   listEvents.forEach((event) => {
     const eventListItem = document.createElement('div');
@@ -300,11 +302,19 @@ export const generateTimeline = async (day) => {
     eventListElement.appendChild(noEvents);
   }
 
-  // scroll the chart to 2 hours before the current time
-  const twoHoursBefore = new Date();
-  twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
-  twoHoursBefore.setMinutes(0);
+  // If today, scroll the chart to 2 hours before the current time.
+  // If tomorrow, scroll to 2 hours before the first event.
+  let twoHoursBefore = new Date();
+  const firstEventTime = new Date(events[0].start.dateTime);
 
+  if (day === 'today') {
+    twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
+  } else if (day === 'tomorrow') {
+    twoHoursBefore = new Date(firstEventTime.getTime());
+    twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
+  }
+
+  twoHoursBefore.setMinutes(0);
   timelineElement.scrollLeft = datetimeToPosition(twoHoursBefore);
 
   // Add event listeners to the event pills and list items

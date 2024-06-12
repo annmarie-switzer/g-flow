@@ -31,7 +31,7 @@
 }
 
 #timeline-actions > button > svg > path {
-  fill: var(--grey2);
+  fill: var(--grey1);
 }
 
 #timeline-actions > span:first-child {

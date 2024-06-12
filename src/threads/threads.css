@@ -27,7 +27,7 @@
   box-sizing: border-box;
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
-  color: var(--grey3);
+  color: var(--grey2);
   transition: opacity 0.3s ease-out;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .subject {
-  color: var(--grey2);
+  color: var(--grey1);
 }
 
 .received {
@@ -79,11 +79,7 @@
 
 .list-item:hover {
   background-color: var(--grey5);
-  color: var(--grey2);
-}
-
-.list-item:hover button > svg > path {
-  fill: var(--grey2);
+  color: var(--grey1);
 }
 
 .no-messages {

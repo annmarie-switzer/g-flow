@@ -23,7 +23,7 @@ button:active {
 }
 
 button > svg > path {
-  fill: var(--grey2);
+  fill: var(--grey1);
 }
 
 .spinner {
