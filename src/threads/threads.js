@@ -1,4 +1,4 @@
-import { getEmail, markAs, moveToTrash } from '../api.js';
+import { getEmail, markAsRead, moveToTrash } from '../api.js';
 import { renderMessages } from '../messages/messages.js';
 import {
   actionButtonRow,
@@ -14,12 +14,12 @@ const threadsContainer = document.getElementById('threads-container');
 const messageContainer = document.getElementById('messages-container');
 
 const onListItemClick = (thread) => {
-  renderMessages(thread.messages);
+  renderMessages(thread.id, thread.messages);
 
   popupContainer.style.display = 'none';
   messageContainer.style.display = 'flex';
 
-  markAs(thread.id, 'read');
+  markAsRead(thread.id);
 };
 
 const generateListItem = (thread) => {

@@ -1,10 +1,13 @@
-import { markAs, moveToTrash } from '../api.js';
+import { markAsUnread, moveToTrash } from '../api.js';
 import { actionButtonRow } from '../shared/action-button-row.js';
 import { backIcon, deleteIcon, markUnreadIcon } from '../shared/index.js';
 import { generateThreadList } from '../threads/threads.js';
 
-export const renderMessages = (messages) => {
+export const renderMessages = (threadId, messages) => {
   const messagesContainer = document.getElementById('messages-container');
+
+  const mostRecentMessage = messages[messages.length - 1];
+  const { id: mostRecentMessageId, sender, subject } = mostRecentMessage;
 
   const actionRow = actionButtonRow([
     {
@@ -14,22 +17,19 @@ export const renderMessages = (messages) => {
     },
     {
       icon: deleteIcon,
-      action: () => moveToTrash(id).then(generateThreadList),
+      action: () => moveToTrash(threadId).then(generateThreadList),
       title: 'Move to trash',
       spinner: true
     },
     {
       icon: markUnreadIcon,
-      action: () => markAs(id, 'unread').then(generateThreadList),
+      action: () => markAsUnread(mostRecentMessageId).then(generateThreadList),
       title: 'Mark unread',
       spinner: true
     }
   ]);
 
   messagesContainer.appendChild(actionRow);
-
-  const mostRecentMessage = messages[messages.length - 1];
-  const { id, sender, subject } = mostRecentMessage;
 
   const messageHeader = document.createElement('div');
   messageHeader.className = 'data';

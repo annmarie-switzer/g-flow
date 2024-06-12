@@ -42,26 +42,31 @@ export const getEvents = async (date) => {
   return items;
 };
 
-/** @param action 'read' | 'unread' */
-export const markAs = async (id, action) => {
-  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/modify`;
-
-  const actions = {
-    read: 'removeLabelIds',
-    unread: 'addLabelIds'
-  };
+export const markAsRead = async (threadId) => {
+  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}/modify`;
 
   const body = JSON.stringify({
-    [actions[action]]: ['UNREAD']
+    removeLabelIds: ['UNREAD']
   });
 
   await soFetch(apiUrl, { method: 'POST', body });
   await chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
 };
 
-export const moveToTrash = async (id) => {
-  const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/trash`;
-  const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}/modify`;
+export const markAsUnread = async (messageId) => {
+  const apiUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}/modify`;
+
+  const body = JSON.stringify({
+    addLabelIds: ['UNREAD']
+  });
+
+  await soFetch(apiUrl, { method: 'POST', body });
+  await chrome.runtime.sendMessage({ action: 'fetchUnreadThreads' });
+};
+
+export const moveToTrash = async (threadId) => {
+  const trashUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}/trash`;
+  const modifyUrl = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}/modify`;
 
   const body = JSON.stringify({
     removeLabelIds: ['INBOX']
