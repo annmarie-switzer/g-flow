@@ -305,7 +305,9 @@ export const generateTimeline = async (day) => {
   // If today, scroll the chart to 2 hours before the current time.
   // If tomorrow, scroll to 2 hours before the first event.
   let twoHoursBefore = new Date();
-  const firstEventTime = new Date(events[0].start.dateTime);
+  const firstEventTime = new Date(
+    events[0] ? events[0].start.dateTime : undefined
+  );
 
   if (day === 'today') {
     twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);

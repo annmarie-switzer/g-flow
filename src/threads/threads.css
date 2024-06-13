@@ -22,8 +22,8 @@
 .list-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 12px;
+  padding: 16px;
   box-sizing: border-box;
   cursor: pointer;
   border-bottom: solid 0.5px var(--grey4);
@@ -38,10 +38,10 @@
 }
 
 .data > div:first-child {
-  width: 274px;
+  width: 350px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .subject,
@@ -52,13 +52,13 @@
 }
 
 .subject {
-  color: var(--grey1);
+  color: var(--grey0);
+  font-size: 16px;
 }
 
 .received {
   margin-left: auto;
   flex-shrink: 0;
-  font-size: 12px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -68,12 +68,8 @@
   fill: currentColor;
 }
 
-.sender {
-  font-size: 12px;
-}
-
 .snippet {
-  height: 32px;
+  height: 48px;
   overflow: hidden;
 }
 
