@@ -1,3 +1,15 @@
+const findHtmlPart = (parts) => {
+  for (let part of parts) {
+    if (part.mimeType === 'text/html') {
+      return part.body.data;
+    } else if (Array.isArray(part.parts)) {
+      let result = findHtmlPart(part.parts);
+      if (result) return result;
+    }
+  }
+  return null;
+};
+
 const formatSender = (senderValue) => {
   let sender = senderValue;
 
@@ -13,17 +25,16 @@ const formatSender = (senderValue) => {
 };
 
 const formatBody = (data) => {
+  console.log(data);
   const { parts, body } = data;
 
-  const endcodedBody = parts
-    ? parts.find((p) => p.mimeType === 'text/html')?.body.data
-    : body?.data;
+  const encodedBody = parts ? findHtmlPart(parts) : body?.data;
 
   let bodyHtml = '';
 
-  if (endcodedBody) {
+  if (encodedBody) {
     try {
-      let base64 = endcodedBody.replace(/-/g, '+').replace(/_/g, '/');
+      let base64 = encodedBody.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4) {
         base64 += '=';
       }
@@ -36,7 +47,7 @@ const formatBody = (data) => {
       }
       bodyHtml = decoder.decode(uint8Array);
     } catch (e) {
-      console.log(`Parse failed for: ${endcodedBody}. Error: ${e}`);
+      console.log(`Parse failed for: ${encodedBody}. Error: ${e}`);
     }
   }
 
@@ -85,4 +96,3 @@ export const formatMessage = (message) => {
     received: formatReceived(message.internalDate)
   };
 };
-
