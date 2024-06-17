@@ -26,9 +26,14 @@
   padding: 16px;
   box-sizing: border-box;
   cursor: pointer;
-  border-bottom: solid 0.5px var(--grey4);
-  color: var(--grey2);
+  border-bottom: solid 0.5px var(--grey5);
+  color: var(--grey1);
   transition: opacity 0.3s ease-out;
+}
+
+.list-item:hover {
+  background-color: var(--grey6);
+  color: var(--grey0);
 }
 
 .data {
@@ -52,7 +57,6 @@
 }
 
 .subject {
-  color: var(--grey0);
   font-size: 16px;
 }
 
@@ -71,11 +75,11 @@
 .snippet {
   height: 48px;
   overflow: hidden;
+  color: var(--grey3);
 }
 
-.list-item:hover {
-  background-color: var(--grey5);
-  color: var(--grey1);
+.list-item:hover .snippet {
+  color: var(--grey2);
 }
 
 .no-messages {
